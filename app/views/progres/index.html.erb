@@ -1,0 +1,29 @@
+<h1>Listing progres</h1>
+
+<table>
+  <tr>
+    <th>Success</th>
+    <th>Hack tag</th>
+    <th>User</th>
+    <th>Done when</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @progres.each do |progre| %>
+  <tr>
+    <td><%= progre.success %></td>
+    <td><%= progre.hack_tag_id %></td>
+    <td><%= progre.user_id %></td>
+    <td><%= progre.done_when %></td>
+    <td><%= link_to 'Show', progre %></td>
+    <td><%= link_to 'Edit', edit_progre_path(progre) %></td>
+    <td><%= link_to 'Destroy', progre, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Progre', new_progre_path %>

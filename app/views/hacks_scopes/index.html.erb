@@ -1,0 +1,29 @@
+<h1>Listing hacks_scopes</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th>Scope</th>
+	<th></th>
+    <th>Hack tag</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @hacks_scopes.each do |hacks_scope| %>
+  <tr>
+    <td><%= hacks_scope.scope_id %></td>
+	<td><%= image_tag Scope.find(hacks_scope.scope_id).image_url, :size=>'25x25' %></td>
+    <td><%= hacks_scope.hack_tag_id %></td>
+	<td><%= HackTag.find(hacks_scope.hack_tag_id).name %></td>
+    <td><%= link_to 'Show', hacks_scope %></td>
+    <td><%= link_to 'Edit', edit_hacks_scope_path(hacks_scope) %></td>
+    <td><%= link_to 'Destroy', hacks_scope, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Hacks scope', new_hacks_scope_path %>

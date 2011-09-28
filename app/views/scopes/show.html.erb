@@ -1,0 +1,115 @@
+<div data-role="content">
+	<div id="DefiningScope">
+	<h2>Current Scope</h2>
+		<% if @hack_tags.blank? %>
+			<h3>All LazyHackers</h3>
+		<% end %>
+		<% @hack_tags.each do |hack_tag| %>
+			<%= hack_tag.name %>
+			<% form_tag search_scope_from_hack_tags_scope_path, :method=>:post do %>
+				<%= hidden_field_tag :add_flag, false %>
+				<%= hidden_field_tag :scope_id, @scope.id %>
+				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
+				<%= submit_tag 'とりのぞく' %>
+			<% end %>
+		<% end %>
+		
+		<div id="Focus">
+			<% form_tag search_scope_from_hack_tags_scope_path, :method=>:post do %>
+				<%= hidden_field_tag :add_flag, true %>
+				<%= hidden_field_tag :scope_id, @scope.id %>
+				<%= select_tag('hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name)) %>
+				<%= submit_tag 'くわえる' %>
+			<% end %>
+		</div>
+	</div>
+	
+	<div id="UsersInThisScope">
+	<h2>People in this Scope</h2>
+		<% if @hack_tags.blank? %>
+			<% User.all.each do |user| %>
+				<%= user.screen_name %>
+				<%= user.email %>
+				<% if user.progres.present? %>
+					<%= user.progres.last.success %>
+				<% else %>
+					初参加
+				<% end %>
+			<% end %>
+		<% else %>
+			<% @users.each do |user| %>
+				<%= user.screen_name %>
+				<%= user.email %>
+				<%= user.progres.last.success %>
+				<%= user.progres.last.done_when %>
+			<% end %>
+		<% end %>
+	</div>
+	
+	<div id="CommitHere">
+		<% if user_signed_in? && current_user.users_scopes.where(:scope_id=>@scope.id).blank? %>
+		<% form_for @users_scope do |f| %>
+			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
+			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
+			<%= f.submit 'このスコープを保存' %>
+		<% end %>
+		<% end %>
+		
+		<% unless @hack_tags.blank? %>
+		<% form_tag create_all_progre_path, :method=>:post do %>
+		<%= submit_tag 'やったよ' %>
+		
+			<% @hack_tags.each do |hack_tag| %>
+				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+			<% end %>
+			
+			<%= hidden_field_tag :scope_id, @scope.id %>
+			<% if user_signed_in? %>
+				<%= hidden_field_tag :user_id, current_user.id %>
+			<% end %>
+		<% end %>
+		<% end %>
+	</div>
+</div>
+
+<div data-role="content">
+	<div id="History">
+		<% @users.each do |user| %>
+			<% user.progres.each do |user_progre| %>
+			<ol style="list-style:none; display:inline-block;">
+			<% updw = user_progre.done_when %>
+				<li class="Day"><%= updw.month %>/<%= updw.day %></li>
+				<li class="Morning">
+					<% if updw.hour > 5 && updw.hour <= 10 %>
+					<%= user_progre.done_when.hour %>時ごろ
+					<% end %>
+				</li>
+				<li class="Daytime">
+					<% if updw.hour > 10 && updw.hour <= 17 %>
+					<%= user_progre.done_when.hour %>時ごろ
+					<% end %>
+				</li>
+				<li class="Evening">
+					<% if updw.hour > 17 && updw.hour <= 22 %>
+					<%= user_progre.done_when.hour %>時ごろ
+					<% end %>
+				</li>
+				<li class="Midnight">
+					<% if updw.hour > 22 || updw.hour <= 5 %>
+					<%= user_progre.done_when.hour %>時ごろ
+					<% end %>
+				</li>
+			</ol>
+			<% end %>
+		<% end %>
+	</div>
+</div>
+
+<div data-role="footer">
+	<%= link_to 'home', scopes_path %>
+	<%= link_to 'Edit', edit_scope_path(@scope) %> |
+	<%= link_to 'Back', scopes_path %> |
+	<% if user_signed_in? && current_user.id ==1 %>
+		<%= link_to 'DestroyThisScope', @scope, :confirm => 'Are you sure?', :method => :delete %>
+	<% end %>
+</div>

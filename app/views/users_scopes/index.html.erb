@@ -1,0 +1,25 @@
+<h1>Listing users_scopes</h1>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Scope</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @users_scopes.each do |users_scope| %>
+  <tr>
+    <td><%= users_scope.user_id %></td>
+    <td><%= users_scope.scope_id %></td>
+    <td><%= link_to 'Show', users_scope %></td>
+    <td><%= link_to 'Edit', edit_users_scope_path(users_scope) %></td>
+    <td><%= link_to 'Destroy', users_scope, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Users scope', new_users_scope_path %>

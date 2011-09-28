@@ -1,0 +1,25 @@
+<%= form_for(@hacks_scope) do |f| %>
+  <% if @hacks_scope.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@hacks_scope.errors.count, "error") %> prohibited this hacks_scope from being saved:</h2>
+
+      <ul>
+      <% @hacks_scope.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :hack_tag_id %><br />
+    <%= f.text_field :hack_tag_id %>
+  </div>
+  <div class="field">
+    <%= f.label :scope_id %><br />
+    <%= f.text_field :scope_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

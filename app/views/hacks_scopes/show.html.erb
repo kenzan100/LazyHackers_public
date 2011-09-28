@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Hack tag:</b>
+  <%= @hacks_scope.hack_tag_id %>
+</p>
+
+<p>
+  <b>Scope:</b>
+  <%= @hacks_scope.scope_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_hacks_scope_path(@hacks_scope) %> |
+<%= link_to 'Back', hacks_scopes_path %>

@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>User:</b>
+  <%= @users_scope.user_id %>
+</p>
+
+<p>
+  <b>Scope:</b>
+  <%= @users_scope.scope_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_users_scope_path(@users_scope) %> |
+<%= link_to 'Back', users_scopes_path %>

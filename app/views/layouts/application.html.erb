@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lazyhackers4</title>
+  <%= stylesheet_link_tag :all %>
+  <%= javascript_include_tag :defaults %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+	
+<div data-role="header">
+	<% if user_signed_in? %>
+		Hi! <%= current_user.screen_name %> <%= current_user.email %>
+		|
+		<%= link_to "Sign Out", destroy_user_session_path %>
+	<% else %>
+		<%= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter) %>
+		<%= link_to "Sign in here", new_user_session_path %>
+		<%= link_to "Sign up here", new_user_registration_path %>
+	<% end %>
+	<%= link_to "home", scopes_path %>
+</div>
+
+<p class="notice"><%= notice %></p>
+<p class="alert"><%= alert %></p>
+
+<%= yield %>
+
+</body>
+</html>

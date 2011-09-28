@@ -1,0 +1,33 @@
+<%= form_for(@progre) do |f| %>
+  <% if @progre.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@progre.errors.count, "error") %> prohibited this progre from being saved:</h2>
+
+      <ul>
+      <% @progre.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :success %><br />
+    <%= f.check_box :success %>
+  </div>
+  <div class="field">
+    <%= f.label :hack_tag_id %><br />
+    <%= f.text_field :hack_tag_id %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br />
+    <%= f.text_field :user_id %>
+  </div>
+  <div class="field">
+    <%= f.label :done_when %><br />
+    <%= f.datetime_select :done_when %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,25 @@
+<%= form_for(@hack_tag) do |f| %>
+  <% if @hack_tag.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@hack_tag.errors.count, "error") %> prohibited this hack_tag from being saved:</h2>
+
+      <ul>
+      <% @hack_tag.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :image_url %><br />
+    <%= f.text_field :image_url %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

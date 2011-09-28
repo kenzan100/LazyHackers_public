@@ -1,0 +1,2 @@
+module HackTagsHelper
+end
