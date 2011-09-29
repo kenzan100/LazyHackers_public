@@ -44,7 +44,7 @@ class UsersScopesController < ApplicationController
 
     respond_to do |format|
       if @users_scope.save
-        format.html { redirect_to(@users_scope, :notice => 'Users scope was successfully created.') }
+        format.html { redirect_to(scopes_path, :notice => 'Users scope was successfully created.') }
         format.xml  { render :xml => @users_scope, :status => :created, :location => @users_scope }
       else
         format.html { render :action => "new" }
@@ -76,7 +76,7 @@ class UsersScopesController < ApplicationController
     @users_scope.destroy
 
     respond_to do |format|
-      format.html { redirect_to(users_scopes_url) }
+      format.html { redirect_to(scopes_url, :notice=>'Deleted UsersScopes.') }
       format.xml  { head :ok }
     end
   end

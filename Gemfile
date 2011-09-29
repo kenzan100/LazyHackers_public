@@ -32,3 +32,6 @@ gem 'sqlite3'
 
 gem 'devise'
 gem 'oa-oauth', :require=>'omniauth/oauth'
+
+gem 'jquery-rails'
+gem 'yaml_db'

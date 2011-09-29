@@ -13,7 +13,7 @@
   <tr>
 	<td><%= hack_tag.id %></td>
     <td><%= hack_tag.name %></td>
-    <td><%= hack_tag.image_url %></td>
+    <td><%= image_tag hack_tag.image_url %></td>
     <td><%= link_to 'Show', hack_tag %></td>
     <td><%= link_to 'Edit', edit_hack_tag_path(hack_tag) %></td>
     <td><%= link_to 'Destroy', hack_tag, :confirm => 'Are you sure?', :method => :delete %></td>

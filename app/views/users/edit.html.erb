@@ -1,0 +1,33 @@
+<h1>Editing UserInfo</h1>
+
+<%= form_for(@user) do |f| %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this progre from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+	<%= f.label :screen_name, 'twitterからの人のユーザーネーム' %>
+    <%= f.text_field :screen_name %>
+  </div>
+  <div class="field">
+	<%= f.label :image_url, 'イメージ画像URL' %>
+    <%= f.text_field :image_url %>
+  </div>
+  <div class="field">
+	<%= f.label :email %>
+    <%= f.text_field :email %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+
+<%= link_to 'Home', scopes_path %>

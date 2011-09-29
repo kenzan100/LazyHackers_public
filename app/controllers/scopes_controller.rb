@@ -35,7 +35,27 @@ class ScopesController < ApplicationController
   # GET /scopes
   # GET /scopes.xml
   def index
-    @scopes = Scope.all
+    @hack_tags = []
+    Progre.all.each do |progre|
+      @hack_tags.push(progre.hack_tag)
+    end
+    @hack_tags = @hack_tags.group_by{|e| e.id}
+    
+    many_scopes = Hash.new
+    @hack_tags.each do |hack_tag|
+      hackscopes = HacksScope.where(:hack_tag_id=>hack_tag[0])
+      hackscopes.each do |hackscope|
+        many_scopes.store(Scope.find(hackscope.scope_id), hack_tag[1].size)
+      end
+    end
+    
+    @msz = many_scopes.size
+    @scopes = Hash.new
+    many_scopes.each do |scope, size|
+      if scope.hack_tags.length == 1
+        @scopes.store(scope, size)
+      end
+    end
 
     respond_to do |format|
       format.html # index.html.erb
@@ -51,7 +71,11 @@ class ScopesController < ApplicationController
     @users = []
     a_users = []
     b_users = []
+    h_progre_lengths = Hash.new
     @hack_tags.each_with_index do |hack_tag, i|
+      
+      h_progre_lengths.store('hack_tag.progres.length', hack_tag)
+      
       if (i+1)%2 == 1
         a_users = []
         hack_tag.users.each do |user|
@@ -70,6 +94,8 @@ class ScopesController < ApplicationController
       end
     end
     @users.uniq!
+    
+    @progres = h_progre_lengths.sort{|a, b| b[0]<=>a[0]}.first[1].progres
 
     @users_scope = UsersScope.new
 

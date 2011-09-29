@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
    :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :uid, :screen_name, :access_token, :access_secret
+  attr_accessible :email, :image_url, :password, :password_confirmation, :remember_me, :uid, :screen_name, :access_token, :access_secret
 
   def self.find_for_user_oauth(access_token, signed_in_resource=nil)
     data = access_token['extra']['user_hash']

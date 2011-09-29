@@ -14,7 +14,11 @@
 <% @hacks_scopes.each do |hacks_scope| %>
   <tr>
     <td><%= hacks_scope.scope_id %></td>
+	<% if Scope.exists?(:id=>hacks_scope.scope_id) %>
 	<td><%= image_tag Scope.find(hacks_scope.scope_id).image_url, :size=>'25x25' %></td>
+	<% else %>
+	<td>NIL!!</td>
+	<% end %>
     <td><%= hacks_scope.hack_tag_id %></td>
 	<td><%= HackTag.find(hacks_scope.hack_tag_id).name %></td>
     <td><%= link_to 'Show', hacks_scope %></td>

@@ -1,31 +1,42 @@
+<div data-role="page" id="Scope">
+<div data-role="header" id="Header">
+	<h1>Scope</h1>
+	<% if user_signed_in? %>
+		<%= link_to "Sign Out", destroy_user_session_path %>
+	<% else %>
+		<%= link_to "Sign up here", new_user_registration_path %>
+	<% end %>
+	<%= link_to "home", scopes_path %>
+</div>
+
 <div data-role="content">
 	<div id="DefiningScope">
-	<h2>Current Scope</h2>
 		<% if @hack_tags.blank? %>
 			<h3>All LazyHackers</h3>
 		<% end %>
 		<% @hack_tags.each do |hack_tag| %>
-			<%= hack_tag.name %>
+			<h3 style="display:inline-block; text-align:center;"><%= hack_tag.name %>
 			<% form_tag search_scope_from_hack_tags_scope_path, :method=>:post do %>
 				<%= hidden_field_tag :add_flag, false %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
-				<%= submit_tag 'とりのぞく' %>
+				<%= submit_tag 'とりのぞく', {'data-icon'=>'delete', 'data-iconpos'=>'notext'} %>
 			<% end %>
+			</h3>
 		<% end %>
 		
-		<div id="Focus">
+		<div id="Focus" style="display:inline-block;">
 			<% form_tag search_scope_from_hack_tags_scope_path, :method=>:post do %>
 				<%= hidden_field_tag :add_flag, true %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
-				<%= select_tag('hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name)) %>
-				<%= submit_tag 'くわえる' %>
+				<%= select_tag 'hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name), {'data-inline'=>'true'} %>
+				<%= submit_tag 'くわえる', {'data-inline'=>'true'} %>
 			<% end %>
 		</div>
 	</div>
 	
 	<div id="UsersInThisScope">
-	<h2>People in this Scope</h2>
+	<h3>People in this Scope</h3>
 		<% if @hack_tags.blank? %>
 			<% User.all.each do |user| %>
 				<%= user.screen_name %>
@@ -38,12 +49,35 @@
 			<% end %>
 		<% else %>
 			<% @users.each do |user| %>
-				<%= user.screen_name %>
-				<%= user.email %>
-				<%= user.progres.last.success %>
-				<%= user.progres.last.done_when %>
+			<li style="display:inline-block; padding:3px 10px;">
+				<% if user.screen_name.present? %>
+					<%= user.screen_name %>
+				<% else %>
+					<%= truncate user.email, :length=>16 %>
+				<% end %>
+				<br>
+				<% if user.image_url.present? %>
+					<%= image_tag user.image_url, :size=>'40x40' %>
+				<% else %>
+					<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
+				<% end %>
+				<% if user.progres.last.success == true %>
+					<%= image_tag 'button_done.png', :size=>'72x40' %>
+				<% else %>
+					<%= image_tag 'button_undone.png', :size=>'72x40' %>
+				<% end %>
+				<br>
+				<span style="color:gray; font-size:11px; float:right;">
+					<%= time_ago_in_words(user.progres.last.done_when) %> ago
+				</span>
+			</li>
 			<% end %>
 		<% end %>
+	
+	<h3>This Done is Viewed by...</h3>
+	<% 30.times do %>
+		<%= image_tag 'DummyImageUrl.png', :size=>'25x25' %>
+	<% end %>
 	</div>
 	
 	<div id="CommitHere">
@@ -70,46 +104,51 @@
 		<% end %>
 		<% end %>
 	</div>
-</div>
-
-<div data-role="content">
-	<div id="History">
-		<% @users.each do |user| %>
-			<% user.progres.each do |user_progre| %>
-			<ol style="list-style:none; display:inline-block;">
-			<% updw = user_progre.done_when %>
-				<li class="Day"><%= updw.month %>/<%= updw.day %></li>
-				<li class="Morning">
-					<% if updw.hour > 5 && updw.hour <= 10 %>
-					<%= user_progre.done_when.hour %>時ごろ
-					<% end %>
-				</li>
-				<li class="Daytime">
-					<% if updw.hour > 10 && updw.hour <= 17 %>
-					<%= user_progre.done_when.hour %>時ごろ
-					<% end %>
-				</li>
-				<li class="Evening">
-					<% if updw.hour > 17 && updw.hour <= 22 %>
-					<%= user_progre.done_when.hour %>時ごろ
-					<% end %>
-				</li>
-				<li class="Midnight">
-					<% if updw.hour > 22 || updw.hour <= 5 %>
-					<%= user_progre.done_when.hour %>時ごろ
-					<% end %>
-				</li>
-			</ol>
-			<% end %>
-		<% end %>
-	</div>
-</div>
-
-<div data-role="footer">
-	<%= link_to 'home', scopes_path %>
-	<%= link_to 'Edit', edit_scope_path(@scope) %> |
-	<%= link_to 'Back', scopes_path %> |
 	<% if user_signed_in? && current_user.id ==1 %>
 		<%= link_to 'DestroyThisScope', @scope, :confirm => 'Are you sure?', :method => :delete %>
 	<% end %>
 </div>
+<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
+	<div data-role="navbar">
+		<ul class="ui-grid-a">
+			<li class="ui-block-a">	<%= link_to 'Scope', '#Scope'%></li>
+			<li class="ui-block-b">	<%= link_to 'History', '#History'%></li>
+		</ul>
+	</div>
+</div>
+</div>
+
+<div data-role="page" id="History">
+	<div data-role="header" id="Header">
+		<h1>History</h1>
+		<% if user_signed_in? %>
+			<%= link_to "Sign Out", destroy_user_session_path %>
+		<% else %>
+			<%= link_to "Sign up here", new_user_registration_path %>
+		<% end %>
+		<%= link_to "home", scopes_path %>
+	</div>
+	<div data-role="content">
+		<% @progres.each do |progre| %>
+			<ol style="list-style:none; display:inline-block;">
+				<li>
+					<%= progre.done_when.month %>/<%= progre.done_when.day %>
+					<%= progre.done_when.hour %>時ごろ
+					<% if progre.user.present? %>
+					<%= progre.user.email %>
+					<%= progre.user.screen_name %>
+					<% end %>
+				</li>
+			</ol>
+		<% end %>
+	</div>
+	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
+		<div data-role="navbar">
+			<ul class="ui-grid-a">
+				<li class="ui-block-a">	<%= link_to 'Scope', '#Scope'%></li>
+				<li class="ui-block-b">	<%= link_to 'History', '#History'%></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
