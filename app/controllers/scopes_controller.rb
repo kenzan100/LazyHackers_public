@@ -71,6 +71,7 @@ class ScopesController < ApplicationController
     @users = []
     a_users = []
     b_users = []
+    @followers = []
     h_progre_lengths = Hash.new
     @hack_tags.each_with_index do |hack_tag, i|
       
@@ -81,11 +82,13 @@ class ScopesController < ApplicationController
         hack_tag.users.each do |user|
           a_users.push(user)
         end
+        @followers = @followers | a_users
       else
         b_users = []
         hack_tag.users.each do |user|
           b_users.push(user)
         end
+        @followers = @followers | b_users
       end
       if i == 0
         @users = a_users
@@ -94,6 +97,7 @@ class ScopesController < ApplicationController
       end
     end
     @users.uniq!
+    @followers.uniq!
     
     @progres = h_progre_lengths.sort{|a, b| b[0]<=>a[0]}.first[1].progres
 

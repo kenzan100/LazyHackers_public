@@ -15,8 +15,8 @@
 			<h3>All LazyHackers</h3>
 		<% end %>
 		<% @hack_tags.each do |hack_tag| %>
-			<h3 style="display:inline-block; text-align:center;"><%= hack_tag.name %>
-			<% form_tag search_scope_from_hack_tags_scope_path, :method=>:post do %>
+			<h3 style="display:inline-block; font-size:200%; margin-top:0;"><%= hack_tag.name %>
+			<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post, :style=>'display:inline-block; height:35px; margin-left:-10px;'} do %>
 				<%= hidden_field_tag :add_flag, false %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
@@ -26,11 +26,11 @@
 		<% end %>
 		
 		<div id="Focus" style="display:inline-block;">
-			<% form_tag search_scope_from_hack_tags_scope_path, :method=>:post do %>
+			<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post} do %>
 				<%= hidden_field_tag :add_flag, true %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
-				<%= select_tag 'hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name), {'data-inline'=>'true'} %>
-				<%= submit_tag 'くわえる', {'data-inline'=>'true'} %>
+				<%= select_tag 'hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name), {:include_blank=>'add more', 'data-inline'=>'true', 'data-native-menu'=>'false', :id=>'AddHackTag'} %>
+				<%#= submit_tag 'くわえる', {'data-inline'=>'true'} %>
 			<% end %>
 		</div>
 	</div>
@@ -56,6 +56,7 @@
 					<%= truncate user.email, :length=>16 %>
 				<% end %>
 				<br>
+				<% link_to('#ActionToUser', "data-rel"=>"dialog", "data-transition"=>"pop", "style"=>"text-decoration:none;") do %>
 				<% if user.image_url.present? %>
 					<%= image_tag user.image_url, :size=>'40x40' %>
 				<% else %>
@@ -66,6 +67,7 @@
 				<% else %>
 					<%= image_tag 'button_undone.png', :size=>'72x40' %>
 				<% end %>
+				<% end %>
 				<br>
 				<span style="color:gray; font-size:11px; float:right;">
 					<%= time_ago_in_words(user.progres.last.done_when) %> ago
@@ -75,8 +77,12 @@
 		<% end %>
 	
 	<h3>This Done is Viewed by...</h3>
-	<% 30.times do %>
-		<%= image_tag 'DummyImageUrl.png', :size=>'25x25' %>
+	<% @followers.each do |follower| %>
+		<% if follower.image_url.present? %>
+			<%= image_tag follower.image_url, :size=>'25x25' %>
+		<% else %>
+			<%= image_tag 'DummyImageUrl.png', :size=>'25x25' %>
+		<% end %>
 	<% end %>
 	</div>
 	
@@ -129,18 +135,40 @@
 		<%= link_to "home", scopes_path %>
 	</div>
 	<div data-role="content">
+		<ul data-role="listview" style="">
 		<% @progres.each do |progre| %>
-			<ol style="list-style:none; display:inline-block;">
 				<li>
-					<%= progre.done_when.month %>/<%= progre.done_when.day %>
-					<%= progre.done_when.hour %>時ごろ
-					<% if progre.user.present? %>
-					<%= progre.user.email %>
-					<%= progre.user.screen_name %>
-					<% end %>
+						<% if progre.user.present? %>
+							<% if progre.user.image_url.present? %>
+								<% if progre.user.screen_name.present? %>
+									<%= progre.user.screen_name %>
+								<% end %>
+								<%= image_tag progre.user.image_url, {:size=>'25x25', 'class'=>'ui-li-icon'} %>
+							<% else %>
+								<% if progre.user.screen_name.present? %>
+									<%= image_tag 'DummyImageUrl.png', {:size=>'25x25', 'class'=>'ui-li-icon'} %>
+									<%= progre.user.screen_name %>
+								<% else %>
+									<%= image_tag 'DummyImageUrl.png', {:size=>'25x25', 'class'=>'ui-li-icon'} %>
+									<%= truncate progre.user.email, :length=>12 %>
+								<% end %>
+							<% end %>
+						<% else %>
+							<%= image_tag 'DummyImageUrl.png', {:size=>'25x25', 'class'=>'ui-li-icon'} %>
+						<% end %>
+						
+						<% Progre.all.each do |each_progre| %>
+							<% if progre.done_when.strftime("%Y-%m-%d-%H-%M") == each_progre.done_when.strftime("%Y-%m-%d-%H-%M") %>
+							<%= each_progre.hack_tag.name %>
+							<% end %>
+						<% end %>
+						
+						<span style="float:right;">
+							<%= progre.done_when.hour %>時ごろ
+						</span>
 				</li>
-			</ol>
 		<% end %>
+		</ul>
 	</div>
 	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 		<div data-role="navbar">
@@ -152,3 +180,13 @@
 	</div>
 </div>
 
+<div data-role="page" id="ActionToUser">
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true">
+			<li data-role="list-divider">ActionMenu</li>
+			<li>Cheer Him Up</li>
+			<li>View His Profile</li>
+			<li><%= link_to 'Cancel', '#Scope' %></li>
+		</ul>
+	</div>
+</div>

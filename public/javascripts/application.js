@@ -4,3 +4,9 @@
 $(document).bind("mobileinit", function(){ 
 $.mobile.ajaxEnabled = false; // ajaxを無効 
 });
+
+$(function(){
+	$('#AddHackTag').change(function(){
+		$(this).parents('form').submit();
+	});
+});

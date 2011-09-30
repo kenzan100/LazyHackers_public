@@ -2,9 +2,6 @@ Lazyhackers4::Application.routes.draw do
 
   resources :users_scopes
 
-  get "users/index"
-  resources :users
-  
   resources :progres do
     member do
       post 'create_all'
@@ -26,6 +23,8 @@ Lazyhackers4::Application.routes.draw do
   devise_for :users, :controllers => {:omniauth_callbacks => "omniauth_callbacks"} do
     get '/users/sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session
   end
+  get "users/index"
+  resources :users
   
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
