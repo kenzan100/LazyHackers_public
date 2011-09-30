@@ -1,3 +1,5 @@
+# coding: utf-8
+
 class UsersScopesController < ApplicationController
   # GET /users_scopes
   # GET /users_scopes.xml
@@ -44,7 +46,7 @@ class UsersScopesController < ApplicationController
 
     respond_to do |format|
       if @users_scope.save
-        format.html { redirect_to(scopes_path, :notice => 'Users scope was successfully created.') }
+        format.html { redirect_to(scopes_path, :notice => '参加表明完了！その日やったタイミングで、やったよボタンを押してくださいね。がんばってね！') }
         format.xml  { render :xml => @users_scope, :status => :created, :location => @users_scope }
       else
         format.html { render :action => "new" }
@@ -60,7 +62,7 @@ class UsersScopesController < ApplicationController
 
     respond_to do |format|
       if @users_scope.update_attributes(params[:users_scope])
-        format.html { redirect_to(@users_scope, :notice => 'Users scope was successfully updated.') }
+        format.html { redirect_to(scopes_path, :notice => 'その組み合わせで、心機一転 頑張ろう！') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -76,7 +78,7 @@ class UsersScopesController < ApplicationController
     @users_scope.destroy
 
     respond_to do |format|
-      format.html { redirect_to(scopes_url, :notice=>'Deleted UsersScopes.') }
+      format.html { redirect_to(scopes_url, :notice=>'その組み合わせが削除されました。また興味があったときに見てくださいね！') }
       format.xml  { head :ok }
     end
   end

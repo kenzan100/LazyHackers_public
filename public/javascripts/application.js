@@ -6,7 +6,18 @@ $.mobile.ajaxEnabled = false; // ajaxを無効
 });
 
 $(function(){
+	$('#DefiningScope form').css('display', 'none');
+	
+	$('#Departure').click(function(){
+		$(this).parent().css('display', 'none');
+		$('#DefiningScope form').css({
+			'display': 'inline-block',
+		});
+		$('#Header h1').toggle();
+	});
+	
 	$('#AddHackTag').change(function(){
 		$(this).parents('form').submit();
 	});
+	
 });

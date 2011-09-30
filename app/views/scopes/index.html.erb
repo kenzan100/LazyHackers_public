@@ -10,16 +10,16 @@
 	<%= link_to "home", scopes_path %>
 </div>
 
-<p class="notice" style="background:yellow; margin:0; font-weight:bold; text-align:center;">
+<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 <%= notice %>
 <%= alert %>
 </p>
 
 <div data-role="content">
 
-	<% if user_signed_in? %>
+	<% if user_signed_in? && current_user.scopes.length > 0 %>
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
-		<li data-role="list-divider">Your Scopes</li>
+		<li data-role="list-divider">ただ今 挑戦中</li>
 
 		<% current_user.scopes.each do |my_scope| %>
 		<li>
@@ -42,7 +42,7 @@
 	</ul>
 	<% end %>
 
-	<% if user_signed_in? %>
+	<% if user_signed_in? && current_user.scopes.length > 0 %>
 	<ul data-role="listview" data-divider-theme="e">
 		<li data-role="list-divider">さぁ、他の挑戦にも旅立とう</li>
 	<% else %>

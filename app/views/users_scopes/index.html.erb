@@ -2,6 +2,7 @@
 
 <table>
   <tr>
+	<th>ID</th>
     <th>User</th>
     <th>Scope</th>
     <th></th>
@@ -11,6 +12,7 @@
 
 <% @users_scopes.each do |users_scope| %>
   <tr>
+	<td><%= users_scope.id %></td>
     <td><%= users_scope.user_id %></td>
     <td><%= users_scope.scope_id %></td>
     <td><%= link_to 'Show', users_scope %></td>

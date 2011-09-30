@@ -1,15 +1,20 @@
 <div data-role="page" id="Scope">
 <div data-role="header" id="Header">
-	<h1>Party</h1>
+	<h1>
+		<% @hack_tags.each do |hack_tag| %><%= hack_tag.name %> <% end %>
+	</h1>
+	<h1 style="display:none;">
+		Editing..
+	</h1>
 	<% if user_signed_in? %>
 		<%= link_to "Sign Out", destroy_user_session_path %>
 	<% else %>
-		<%= link_to "Sign up here", new_user_registration_path %>
+		<%= link_to "Sign In", new_user_session_path %>
 	<% end %>
 	<%= link_to "home", scopes_path %>
 </div>
 
-<p class="notice" style="background:yellow; margin:0; font-weight:bold; text-align:center;">
+<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 <%= notice %>
 <%= alert %>
 </p>
@@ -25,6 +30,11 @@
 				<%= hidden_field_tag :add_flag, false %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
+				<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
+					<%= hidden_field_tag :from_your_set, true %>
+				<% else %>
+					<%= hidden_field_tag :from_your_set, false %>
+				<% end %>
 				<%= submit_tag 'とりのぞく', {'data-icon'=>'delete', 'data-iconpos'=>'notext'} %>
 			<% end %>
 			</h3>
@@ -34,14 +44,21 @@
 			<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post} do %>
 				<%= hidden_field_tag :add_flag, true %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
-				<%= select_tag 'hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name), {:include_blank=>'add more', 'data-inline'=>'true', 'data-native-menu'=>'false', :id=>'AddHackTag'} %>
+				<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
+					<%= hidden_field_tag :from_your_set, true %>
+				<% else %>
+					<%= hidden_field_tag :from_your_set, false %>
+				<% end %>
+				<%= select_tag 'hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name), {:include_blank=>'追加', 'data-inline'=>'true', 'data-native-menu'=>'false', :id=>'AddHackTag'} %>
 				<%#= submit_tag 'くわえる', {'data-inline'=>'true'} %>
 			<% end %>
 		</div>
+		<button id="Departure" data-inline="true" style="">
+			編集
+		</button>
 	</div>
 	
 	<div id="UsersInThisScope">
-	<h3>皆の進捗</h3>
 		<% if @hack_tags.blank? %>
 			<% User.all.each do |user| %>
 				<%= user.screen_name %>
@@ -81,25 +98,34 @@
 			<% end %>
 		<% end %>
 	
-	<h3>This Done is Viewed by...</h3>
-	<% @followers.each do |follower| %>
-		<% if follower.image_url.present? %>
-			<%= image_tag follower.image_url, :size=>'25x25' %>
-		<% else %>
-			<%= image_tag 'DummyImageUrl.png', :size=>'25x25' %>
-		<% end %>
-	<% end %>
-	</div>
 	
-	<div id="CommitHere">
-		<% if user_signed_in? && current_user.users_scopes.where(:scope_id=>@scope.id).blank? %>
+	<% if user_signed_in? && current_user.users_scopes.where(:scope_id=>@scope.id).blank? && flash[:from_your_set]=='true' %>
+		<% form_for current_user.users_scopes.where(:scope_id=>flash[:current_set_id].to_i).last do |f| %>
+			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
+			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
+			<%= f.submit '挑戦中のセットを上書きする' %>
+		<% end %>
 		<% form_for @users_scope do |f| %>
 			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
 			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
-			<%= f.submit 'このスコープを保存' %>
+			<%= f.submit '新しくこのセットにも挑戦する' %>
 		<% end %>
+	<% elsif user_signed_in? && current_user.users_scopes.where(:scope_id=>@scope.id).blank? %>
+		<% form_for @users_scope do |f| %>
+			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
+			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
+			<%= f.submit 'この組み合わせで頑張る' %>
 		<% end %>
-		
+	<% elsif !user_signed_in? %>
+		<button>
+			<%= link_to '新規登録' %>
+		</button>
+	<% end %>
+	
+	</div>
+	
+	<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
+	<div id="CommitHere">
 		<% unless @hack_tags.blank? %>
 		<% form_tag create_all_progre_path, :method=>:post do %>
 		<%= submit_tag 'やったよ' %>
@@ -115,6 +141,19 @@
 		<% end %>
 		<% end %>
 	</div>
+	<% end %>
+
+	<div id="Followers">
+	<h3>This Done is Viewed by...</h3>
+	<% @followers.each do |follower| %>
+		<% if follower.image_url.present? %>
+			<%= image_tag follower.image_url, :size=>'25x25' %>
+		<% else %>
+			<%= image_tag 'DummyImageUrl.png', :size=>'25x25' %>
+		<% end %>
+	<% end %>
+	</div>
+	
 	<% if user_signed_in? && current_user.id ==1 %>
 		<%= link_to 'DestroyThisScope', @scope, :confirm => 'Are you sure?', :method => :delete %>
 	<% end %>
@@ -188,10 +227,10 @@
 <div data-role="page" id="ActionToUser">
 	<div data-role="content">
 		<ul data-role="listview" data-inset="true">
-			<li data-role="list-divider">ActionMenu</li>
-			<li>Cheer Him Up</li>
-			<li>View His Profile</li>
-			<li><%= link_to 'Cancel', '#Scope' %></li>
+			<li data-role="list-divider">メニュー</li>
+			<li>この人を応援する</li>
+			<li>この人のプロフィールを見る</li>
+			<li><%= link_to '戻る', '#Scope' %></li>
 		</ul>
 	</div>
 </div>

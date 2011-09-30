@@ -2,7 +2,7 @@
 
 class ScopesController < ApplicationController
   
-  # GET
+  # POST
   def search_scope_from_hack_tags
     from_current_scope = Scope.find(params[:scope_id])
     adding_removing_hack_tag = HackTag.where(:id => params[:hack_tag_id])
@@ -19,8 +19,15 @@ class ScopesController < ApplicationController
       end
     end
     
+    if flash[:from_your_set] == 'true'
+      params[:from_your_set] = 'true'
+      params[:scope_id] = flash[:current_set_id]
+    end
+    
     if @scope_to
-      redirect_to @scope_to, :notice=>'その範囲で仲間が見つかりました！'
+      flash[:from_your_set] = params[:from_your_set]
+      flash[:current_set_id] = params[:scope_id]
+      redirect_to @scope_to, :notice=>'その組み合わせだと、こんな感じです。'
     else
       @creating_scope = Scope.new(:image_url=>'lazycat.png')
       @creating_scope.save
@@ -28,7 +35,9 @@ class ScopesController < ApplicationController
         creating_hacks_scope = HacksScope.new(:scope_id=>@creating_scope.id, :hack_tag_id=>shack_tag.id)
         creating_hacks_scope.save
       end
-      redirect_to @creating_scope, :notice=>'どうやら あなたがこの範囲の先駆者です。がんばって！'
+      flash[:from_your_set] = params[:from_your_set]
+      flash[:current_set_id] = params[:scope_id]
+      redirect_to @creating_scope, :notice=>'その組み合わせだと、こんな感じです。'
     end
   end
   
@@ -66,6 +75,11 @@ class ScopesController < ApplicationController
   # GET /scopes/1
   # GET /scopes/1.xml
   def show
+    if flash[:from_your_set] == 'true'
+      flash.keep(:from_your_set)
+      flash.keep(:current_set_id)
+    end
+    
     @scope = Scope.find(params[:id])
     @hack_tags = @scope.hack_tags
     @users = []
