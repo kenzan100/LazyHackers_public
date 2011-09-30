@@ -1,6 +1,6 @@
 <div data-role="page" id="Scope">
 <div data-role="header" id="Header">
-	<h1>Scope</h1>
+	<h1>Party</h1>
 	<% if user_signed_in? %>
 		<%= link_to "Sign Out", destroy_user_session_path %>
 	<% else %>
@@ -8,6 +8,11 @@
 	<% end %>
 	<%= link_to "home", scopes_path %>
 </div>
+
+<p class="notice" style="background:yellow; margin:0; font-weight:bold; text-align:center;">
+<%= notice %>
+<%= alert %>
+</p>
 
 <div data-role="content">
 	<div id="DefiningScope">
@@ -36,7 +41,7 @@
 	</div>
 	
 	<div id="UsersInThisScope">
-	<h3>People in this Scope</h3>
+	<h3>皆の進捗</h3>
 		<% if @hack_tags.blank? %>
 			<% User.all.each do |user| %>
 				<%= user.screen_name %>
