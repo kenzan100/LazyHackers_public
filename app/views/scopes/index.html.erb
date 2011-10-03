@@ -16,6 +16,8 @@
 </p>
 
 <div data-role="content">
+	<%# Progre.from_party_id_to_hack_tag_id %>
+	<%# Progre.from_updated_at_to_done_when %>
 
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
@@ -27,38 +29,47 @@
 			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
 			<p style="margin-left:20px; margin-top:0; margin-bottom:2px; font-weight:bold;">
 			<% my_scope.hack_tags.each do |mhack_tag| %>
-				<%= mhack_tag.name %>
-			<% end %>
-			</p>
-			<p class="ui-li-desc" style="margin-left:20px; margin-top:0; margin-bottom:0;">
-				<% 5.times do %>
-				<%= image_tag 'DummyImageURL.png', :size=>'25x25' %>
+				<% if mhack_tag.singled_by.blank? %>
+					<%= mhack_tag.name %>
+				<% elsif mhack_tag.singled_by == current_user.id %>
+				</p>
+				<p class="ui-li-desc" style="margin-left:20px; margin-top:0; margin-bottom:0;">
+					<%= mhack_tag.name%>
 				<% end %>
+			<% end %>
 			</p>
 		<% end %>
 		<%= link_to 'RemoveFromMyScope', my_scope.users_scopes.where(:user_id=>current_user.id).first, :confirm=>'Sure about this?', :method=>:delete %>
 		</li>
 		<% end %>
+		<li data-role="list-divider">
+			他にもやってみる
+		</li>
 	</ul>
 	<% end %>
 
-	<% if user_signed_in? && current_user.scopes.length > 0 %>
-	<ul data-role="listview" data-divider-theme="e">
-		<li data-role="list-divider">さぁ、他の挑戦にも旅立とう</li>
-	<% else %>
-	<ul data-role="listview" data-divider-theme="e">
-		<li data-role="list-divider">さぁ、様々な挑戦に旅立とう</li>
-	<% end %>
+	<ul data-role="listview" data-divider-theme="e" data-filter="true" data-filter-placeholder="あなたのやっていることは何ですか？">
 	
-	<% @scopes.each do |scope, size| %>
+	<% @scopes.each do |scope| %>
 		<li style="">
 			<% link_to(scope) do %>
-				<%= image_tag scope.hack_tags.first.image_url, {'class'=>'ui-li-thumb'}%>
-					<%= scope.hack_tags.first.name %>
+				<% if scope.hack_tags.present? %>
+					<%= image_tag scope.hack_tags.first.image_url, {'class'=>'ui-li-thumb'}%>
+					<% scope.hack_tags.each do |hack_tag| %>
+					 <%= hack_tag.name %>
+					<% end %>
+				<% end %>
 			<% end %>
 		</li>
 	<% end %>
+	
 	</ul>
+	
+<!--
+	<li data-role="list-divider">この中に、あなたが既に習慣化できていることはありませんか？</li>
+	<li data-role="list-divider">現在、こんな習慣化に挑戦する貴方を応援する準備ができています。</li>
+-->
+
 </div>
 
 <div data-role="footer" id="Footer">

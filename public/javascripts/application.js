@@ -6,8 +6,23 @@ $.mobile.ajaxEnabled = false; // ajaxを無効
 });
 
 $(function(){
-	$('#DefiningScope form').css('display', 'none');
+	$('#UsersInThisScope a').click(function(){
+		var hoge = $(this).siblings('.user_id').text();
+		//$('#Cheering').html(hoge);
+		$('#Cheering #user_id').val(hoge);
+		$('#SeeProfile').html('<a href="/users/'+hoge+'/">この人のプロフィールを見る</a>')
+	});
 	
+	$('#Footer').click(function(){
+		$('#History input.MeToo').siblings().css('top', '-18px');
+	});
+	
+	$('#DefiningScope form').css('display', 'none');
+	$('#StandOutForm').css('display', 'none');
+	
+	$('#StandOut').click(function(){
+		$('#StandOutForm').toggle();
+	});
 	$('#Departure').click(function(){
 		$(this).parent().css('display', 'none');
 		$('#DefiningScope form').css({
@@ -17,7 +32,8 @@ $(function(){
 	});
 	
 	$('#AddHackTag').change(function(){
-		$(this).parents('form').submit();
+		$(this).parents('form#AddingHackTag').submit();
 	});
 	
+	$('#MeToo').siblings().css('top', '-18px');
 });

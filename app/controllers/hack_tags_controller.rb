@@ -1,3 +1,5 @@
+# coding: utf-8
+
 class HackTagsController < ApplicationController
   # GET /hack_tags
   # GET /hack_tags.xml
@@ -35,6 +37,16 @@ class HackTagsController < ApplicationController
   # GET /hack_tags/1/edit
   def edit
     @hack_tag = HackTag.find(params[:id])
+  end
+
+  # POST
+  def create_hack_tag_and_hacks_scope
+    @hack_tag = HackTag.new(:name=>params[:name], :image_url=>params[:image_url], :singled_by=>params[:singled_by])
+    @hack_tag.save
+    @hacks_scope = HacksScope.new(:hack_tag_id=>@hack_tag.id, :scope_id=>params[:scope_id])
+    @hacks_scope.save
+    
+    redirect_to Scope.find(params[:scope_id]), :notice=>'あなたのその報告が、他の人を勇気づけます。ありがとう。'
   end
 
   # POST /hack_tags

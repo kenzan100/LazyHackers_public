@@ -51,6 +51,19 @@ class ProgresController < ApplicationController
       progre.save
     end
     
+    if params[:hack_tag_singled_ids]
+    params[:hack_tag_singled_ids].each do |htsid|
+      progre = Progre.new
+      progre.hack_tag_id = htsid
+      progre.success = true
+      progre.done_when = Time.now
+      if user_signed_in?
+        progre.user_id = params[:user_id]
+      end
+      progre.save
+    end
+    end
+    
     @scope = Scope.find(params[:scope_id])
     
     redirect_to @scope, :notice=>'おつかれさまです！他の人を応援してみては？'

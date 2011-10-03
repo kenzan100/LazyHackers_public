@@ -1,0 +1,6 @@
+<%= @current_user.screen_name %>さんが、
+<% @hack_tags.each do |hack_tag| %>
+	<%= hack_tag.name %>
+<% end %>をやろうとする貴方を応援しています！
+
+visit http://lazyhackers.com

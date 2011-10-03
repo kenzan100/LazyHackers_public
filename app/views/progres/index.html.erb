@@ -3,6 +3,7 @@
 <table>
   <tr>
     <th>Success</th>
+	<th>Party</th>
     <th>Hack tag</th>
     <th>User</th>
     <th>Done when</th>
@@ -14,6 +15,7 @@
 <% @progres.each do |progre| %>
   <tr>
     <td><%= progre.success %></td>
+	<td><%= progre.party_id %></td>
     <td><%= progre.hack_tag_id %></td>
     <td><%= progre.user_id %></td>
     <td><%= progre.done_when %></td>

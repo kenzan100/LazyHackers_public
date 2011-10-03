@@ -20,7 +20,11 @@
 	<td>NIL!!</td>
 	<% end %>
     <td><%= hacks_scope.hack_tag_id %></td>
+	<% if hacks_scope.hack_tag_id.present? && HackTag.exists?(:id=>hacks_scope.hack_tag.id) %>
 	<td><%= HackTag.find(hacks_scope.hack_tag_id).name %></td>
+	<% else %>
+	<td>NIL!!!</td>
+	<% end %>
     <td><%= link_to 'Show', hacks_scope %></td>
     <td><%= link_to 'Edit', edit_hacks_scope_path(hacks_scope) %></td>
     <td><%= link_to 'Destroy', hacks_scope, :confirm => 'Are you sure?', :method => :delete %></td>

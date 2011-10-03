@@ -1,0 +1,20 @@
+
+--- 
+parties_hacktags: 
+  columns: 
+  - id
+  - party_id
+  - hack_tag_id
+  records: 
+  - - 1
+    - 1
+    - 1
+  - - 2
+    - 1
+    - 2
+  - - 3
+    - 1
+    - 3
+  - - 4
+    - 1
+    - 5

@@ -10,11 +10,16 @@ Lazyhackers4::Application.routes.draw do
 
   resources :hacks_scopes
 
-  resources :hack_tags
+  resources :hack_tags do
+    collection do
+      post 'create_hack_tag_and_hacks_scope'
+    end
+  end
 
   resources :scopes do
     member do
       post 'search_scope_from_hack_tags'
+      post 'cheering'
     end
   end
 

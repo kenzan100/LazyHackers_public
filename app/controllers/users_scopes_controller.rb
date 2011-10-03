@@ -62,7 +62,7 @@ class UsersScopesController < ApplicationController
 
     respond_to do |format|
       if @users_scope.update_attributes(params[:users_scope])
-        format.html { redirect_to(scopes_path, :notice => 'その組み合わせで、心機一転 頑張ろう！') }
+        format.html { redirect_to(scopes_path, :notice => '今度はこの組み合わせで、頑張ってみてね。') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

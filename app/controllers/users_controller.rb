@@ -1,11 +1,25 @@
 # coding: utf-8
 
 class UsersController < ApplicationController
+
   def index
     if user_signed_in? && current_user.id == 1
       @users = User.all
     else
       redirect_to root_path, :notice=>'you are not authorized to view that. sorry.'
+    end
+  end
+  
+  def show
+    user = User.find(params[:id])
+    @user_id = user.id
+    @username = user.screen_name
+    @cheering = 0
+    @cheered = 0
+    @do = 0
+    @party_king = []
+    respond_to do |format|
+      format.html
     end
   end
 

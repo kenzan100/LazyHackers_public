@@ -44,27 +44,8 @@ class ScopesController < ApplicationController
   # GET /scopes
   # GET /scopes.xml
   def index
-    @hack_tags = []
-    Progre.all.each do |progre|
-      @hack_tags.push(progre.hack_tag)
-    end
-    @hack_tags = @hack_tags.group_by{|e| e.id}
     
-    many_scopes = Hash.new
-    @hack_tags.each do |hack_tag|
-      hackscopes = HacksScope.where(:hack_tag_id=>hack_tag[0])
-      hackscopes.each do |hackscope|
-        many_scopes.store(Scope.find(hackscope.scope_id), hack_tag[1].size)
-      end
-    end
-    
-    @msz = many_scopes.size
-    @scopes = Hash.new
-    many_scopes.each do |scope, size|
-      if scope.hack_tags.length == 1
-        @scopes.store(scope, size)
-      end
-    end
+    @scopes = Scope.all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -78,42 +59,40 @@ class ScopesController < ApplicationController
     if flash[:from_your_set] == 'true'
       flash.keep(:from_your_set)
       flash.keep(:current_set_id)
+    else
+      #flash.now[:notice] = 'ここには、これだけの人がいます。プラスボタンを押すと、範囲を狭めたり、広げたりできます。'
     end
     
     @scope = Scope.find(params[:id])
-    @hack_tags = @scope.hack_tags
-    @users = []
-    a_users = []
-    b_users = []
-    @followers = []
-    h_progre_lengths = Hash.new
-    @hack_tags.each_with_index do |hack_tag, i|
-      
-      h_progre_lengths.store('hack_tag.progres.length', hack_tag)
-      
-      if (i+1)%2 == 1
-        a_users = []
-        hack_tag.users.each do |user|
-          a_users.push(user)
-        end
-        @followers = @followers | a_users
+    
+    @hack_tags = []
+    @hack_tags_singled = []
+    @scope.hack_tags.each do |hack_tag|
+      if hack_tag.singled_by.blank?
+        @hack_tags.push(hack_tag)
       else
-        b_users = []
-        hack_tag.users.each do |user|
-          b_users.push(user)
-        end
-        @followers = @followers | b_users
-      end
-      if i == 0
-        @users = a_users
-      else
-        @users = a_users & b_users
+        @hack_tags_singled.push(hack_tag)
       end
     end
+    
+    users_followers = HackTag.check_intersection(@hack_tags)
+    
+    @users = users_followers[0]
+    @followers = users_followers[1]
     @users.uniq!
     @followers.uniq!
     
-    @progres = h_progre_lengths.sort{|a, b| b[0]<=>a[0]}.first[1].progres
+    @progres = []
+    @users.each do |user|
+      user.progres.group("DATE(done_when)").each do |u_progre|
+        @progres.push(u_progre)
+      end
+    end
+    @progres = @progres.sort{|a, b| b.done_when<=>a.done_when}
+    @progres_dates = @progres.group_by{|e| e.done_when.strftime("%Y %m %d")}
+    
+    #次の行は、プログレスの幅をもっと広げた状態です。
+    #@progres = h_progre_lengths.sort{|a, b| b[0]<=>a[0]}.first[1].progres
 
     @users_scope = UsersScope.new
 
@@ -182,4 +161,34 @@ class ScopesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def cheering
+    user = User.find(params[:user_id])
+    @scope = Scope.find(params[:scope_id])
+    hack_tags = @scope.hack_tags
+    
+    @cheering_progre = Progre.new(:user_id=>user.id, :scope_id=>@scope.id, :done_when=>Time.now)
+    @cheering_progre.cheered_by = current_user.id
+    @cheering_progre.save
+    
+      #if user.when_to_dos.where(:hack_id=>hack.id, :from_user_id=>0).present?
+        #if Time.now.strftime("%H") < user.when_to_dos.where(:hack_id=>hack.id, :from_user_id=>0).last.desired_time.strftime("%H")
+          #when_to_do = WhenToDo.new(:kind=>'cheer', :user_id=>user.id, :hack_tag_id=>hack_tag.id, :from_user_id=>current_user.id)
+          #when_to_do.desired_time = user.when_to_dos.where(:hack_id=>hack.id, :from_user_id=>0).last.desired_time
+      
+          #if when_to_do.save
+            #redirect_to(@party, :notice=>'応援メッセージが予約されました。やってくれるのが楽しみですね！')
+          #else
+            #redirect_to(@party, :notice=>'エラーが発生しました。申し訳ありませんが、もう一度お試しください。')
+          #end
+        #else
+          #@mail = NoticeMailer.sendmail_cheer(user.email, current_user, hack.title).deliver
+          #redirect_to(@party, :notice=>'この方の希望時刻は既に過ぎていたので、今すぐ送りました！ナイスセーブですね。')
+        #end
+      #else
+        @mail = NotificationMailer.sendmail_cheer(user.email, current_user, hack_tags).deliver
+        redirect_to(@scope, :notice => 'ありがとう！応援メールが正しく送信できました！')
+      #end
+  end
+  
 end
