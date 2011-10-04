@@ -2,6 +2,15 @@
 
 class ScopesController < ApplicationController
   
+  def list
+    @scopes = Scope.all
+    
+    respond_to do |format|
+      format.html # list.html.erb
+      format.xml  { render :xml => @scopes }
+    end
+  end
+  
   # POST
   def search_scope_from_hack_tags
     from_current_scope = Scope.find(params[:scope_id])
@@ -34,6 +43,10 @@ class ScopesController < ApplicationController
       searching_hack_tag_condition.each do |shack_tag|
         creating_hacks_scope = HacksScope.new(:scope_id=>@creating_scope.id, :hack_tag_id=>shack_tag.id)
         creating_hacks_scope.save
+        if shack_tag.image_url.present?
+          @creating_scope.image_url = shack_tag.image_url
+          @creating_scope.save
+        end
       end
       flash[:from_your_set] = params[:from_your_set]
       flash[:current_set_id] = params[:scope_id]
@@ -59,27 +72,30 @@ class ScopesController < ApplicationController
     if user_signed_in?
       @friends = []
       @feed = []
+      
       @hack_tags_singled = []
       current_user.scopes.each do |my_scope|
         users_followers = HackTag.check_intersection(my_scope.hack_tags)
-        @friends.push(users_followers[0])
+        @friends.push(users_followers[1])
         my_scope.hack_tags.each do |my_scope_hack_tag|
           unless my_scope_hack_tag.singled_by.blank?
             @hack_tags_singled.push(my_scope_hack_tag)
           end
         end
       end
-      @friends.flatten!.uniq!
+      unless @friends.blank?
+        @friends.flatten!.uniq!
+      end
       
       current_user.scopes.each do |my_scope|
         @friends.each do |friend|
+          friend.progres.order('updated_at DESC').limit(10).where(:hack_tag_id=>my_scope.hack_tags.where('singled_by IS NULL').last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+            @feed.push(u_progre)
+          end
           @hack_tags_singled.each do |single_hack_tag|
-            friend.progres.where(:hack_tag_id=>single_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+            friend.progres.order('updated_at DESC').limit(10).where(:hack_tag_id=>single_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
               @feed.push(u_progre)
             end
-          end
-          friend.progres.where(:hack_tag_id=>my_scope.hack_tags.where('singled_by IS NULL').last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
-            @feed.push(u_progre)
           end
         end
       end
@@ -142,9 +158,9 @@ class ScopesController < ApplicationController
             @progres.push(u_progre)
           end
         end
-        user.progres.where(:hack_tag_id=>@hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
-          @progres.push(u_progre)
-        end
+      end
+      user.progres.where(:hack_tag_id=>@hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+        @progres.push(u_progre)
       end
     end
     @progres = @progres.sort{|a, b| b.done_when<=>a.done_when}

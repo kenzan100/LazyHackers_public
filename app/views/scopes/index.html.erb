@@ -1,6 +1,5 @@
 <div data-role="page" id="YourScope">
-
-<div data-role="header" id="Header">
+	<div data-role="header" id="Header">
 	<h1>LazyHackers</h1>
 	<% if user_signed_in? %>
 		<%= link_to "Sign Out", destroy_user_session_path %>
@@ -9,13 +8,11 @@
 	<% end %>
 	<%= link_to "home", scopes_path %>
 </div>
-
-<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
-<%= notice %>
-<%= alert %>
-</p>
-
-<div data-role="content">
+	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
+		<%= notice %><%= alert %>
+	</p>
+	<div data-role="content">
+	<%# UsersHacktag.update_from_progres(Progre.all) %>
 	<%# Progre.from_updated_at_to_done_when %>
 	<%# Progre.from_party_id_to_hack_tag_id %>
 
@@ -50,7 +47,7 @@
 			他にもやってみる
 		</li>
 	<% else %>
-	<li data-role="list-divider">あなたは普段、何をしますか？</li>
+	<li data-role="list-divider">何を習慣にしていますか？</li>
 	<% end %>
 	</ul>
 
@@ -67,7 +64,6 @@
 			<% end %>
 		</li>
 	<% end %>
-	
 	</ul>
 	
 <!--
@@ -76,7 +72,7 @@
 -->
 
 </div>
-<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
+	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 	<div data-role="navbar">
 		<ul class="ui-grid-a">
 			<li class="ui-block-a">	<%= link_to 'YourScope', '#YourScope'%></li>
@@ -97,7 +93,7 @@
 		<%= link_to "home", scopes_path %>
 	</div>
 	<div data-role="content">
-		<ul data-role="listview" style="">
+		<ul data-role="listview" style="" data-filter="true">
 			<% @feed_dates.each do |date| %>
 				<li data-role="list-divider" style="height: 10px;">
 					<span style="float:right;">

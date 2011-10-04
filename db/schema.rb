@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111003124838) do
+ActiveRecord::Schema.define(:version => 20111004055024) do
 
   create_table "hack_tag_follows", :force => true do |t|
     t.integer  "hack_tag_id"
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20111003124838) do
     t.boolean  "dropout"
     t.integer  "party_id"
   end
+
   add_index "progres", ["hack_tag_id"], :name => "index_progres_on_hack_tag_id"
 
   create_table "scopes", :force => true do |t|
@@ -90,6 +91,13 @@ ActiveRecord::Schema.define(:version => 20111003124838) do
 
   add_index "users", ["email"], :name => "index_users_on_email"
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "users_hacktags", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "hack_tag_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users_scopes", :force => true do |t|
     t.integer  "user_id"

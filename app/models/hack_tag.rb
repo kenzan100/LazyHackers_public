@@ -3,7 +3,8 @@ class HackTag < ActiveRecord::Base
   has_many :scopes, :through => :hacks_scopes
   
   has_many :progres
-  has_many :users, :through => :progres
+  has_many :users_hacktags
+  has_many :users, :through => :users_hacktags
   
   has_many :hack_tag_follows
   

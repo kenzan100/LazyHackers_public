@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>User:</b>
+  <%= @users_hacktag.user_id %>
+</p>
+
+<p>
+  <b>Hack tag:</b>
+  <%= @users_hacktag.hack_tag_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_users_hacktag_path(@users_hacktag) %> |
+<%= link_to 'Back', users_hacktags_path %>

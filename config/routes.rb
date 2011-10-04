@@ -1,4 +1,7 @@
 Lazyhackers4::Application.routes.draw do
+  resources :users_hacktags
+
+  resources :parties_hacktags
 
   resources :hack_tag_follows
 
@@ -22,6 +25,9 @@ Lazyhackers4::Application.routes.draw do
     member do
       post 'search_scope_from_hack_tags'
       post 'cheering'
+    end
+    collection do
+      get 'list'
     end
   end
 

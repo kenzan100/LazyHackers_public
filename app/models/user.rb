@@ -1,7 +1,8 @@
 class User < ActiveRecord::Base
   
   has_many :progres
-  has_many :hack_tags, :through => :progres
+  has_many :users_hacktags
+  has_many :hack_tags, :through => :users_hacktags
   
   has_many :users_scopes
   has_many :scopes, :through => :users_scopes
