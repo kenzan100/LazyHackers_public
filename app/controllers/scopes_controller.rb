@@ -45,8 +45,50 @@ class ScopesController < ApplicationController
   # GET /scopes.xml
   def index
     
-    @scopes = Scope.all
+    @scopes = []
+    Scope.all.each do |scope|
+      if scope.hack_tags.length == 1
+        HackTag.where(:root_flag=>true).each do |root_ht|
+          if scope.hack_tags.exists?(:id=>root_ht.id)
+            @scopes.push(scope)
+          end
+        end
+      end
+    end
+    
+    if user_signed_in?
+      @friends = []
+      @feed = []
+      @hack_tags_singled = []
+      current_user.scopes.each do |my_scope|
+        users_followers = HackTag.check_intersection(my_scope.hack_tags)
+        @friends.push(users_followers[0])
+        my_scope.hack_tags.each do |my_scope_hack_tag|
+          unless my_scope_hack_tag.singled_by.blank?
+            @hack_tags_singled.push(my_scope_hack_tag)
+          end
+        end
+      end
+      @friends.flatten!.uniq!
+      
+      current_user.scopes.each do |my_scope|
+        @friends.each do |friend|
+          @hack_tags_singled.each do |single_hack_tag|
+            friend.progres.where(:hack_tag_id=>single_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+              @feed.push(u_progre)
+            end
+          end
+          friend.progres.where(:hack_tag_id=>my_scope.hack_tags.where('singled_by IS NULL').last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+            @feed.push(u_progre)
+          end
+        end
+      end
+      @feed.uniq!
+      @feed = @feed.sort{|a, b| b.done_when<=>a.done_when}
+      @feed_dates = @feed.group_by{|e| e.done_when.strftime("%Y %m %d")}
+    end
 
+    
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @scopes }
@@ -75,6 +117,13 @@ class ScopesController < ApplicationController
       end
     end
     
+    @next_hack_tags = []
+    HackTag.all.each do |ht|
+      if ht.hack_tag_follows.exists?(:greater_hack_tag_id=>@hack_tags.last.id)
+        @next_hack_tags.push(ht)
+      end
+    end
+    
     users_followers = HackTag.check_intersection(@hack_tags)
     
     @users = users_followers[0]
@@ -82,10 +131,20 @@ class ScopesController < ApplicationController
     @users.uniq!
     @followers.uniq!
     
+    #progres_feed = Progre.check_intersection(@hack_tags)
+    #@feed = progres_feed[1]
+    #@progres = progres_feed[0]
     @progres = []
     @users.each do |user|
-      user.progres.group("DATE(done_when)").each do |u_progre|
-        @progres.push(u_progre)
+      @hack_tags_singled.each do |single_hack_tag|
+        if user.id == single_hack_tag.singled_by
+          user.progres.where(:hack_tag_id=>single_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+            @progres.push(u_progre)
+          end
+        end
+        user.progres.where(:hack_tag_id=>@hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+          @progres.push(u_progre)
+        end
       end
     end
     @progres = @progres.sort{|a, b| b.done_when<=>a.done_when}

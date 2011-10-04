@@ -1,0 +1,25 @@
+<%= form_for(@hack_tag_follow) do |f| %>
+  <% if @hack_tag_follow.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@hack_tag_follow.errors.count, "error") %> prohibited this hack_tag_follow from being saved:</h2>
+
+      <ul>
+      <% @hack_tag_follow.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :greater_hack_tag_id %><br />
+    <%= f.text_field :greater_hack_tag_id %>
+  </div>
+  <div class="field">
+    <%= f.label :hack_tag_id %><br />
+    <%= f.text_field :hack_tag_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

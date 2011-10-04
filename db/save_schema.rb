@@ -11,13 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111001153031) do
+ActiveRecord::Schema.define(:version => 20111002095033) do
 
   create_table "hack_tags", :force => true do |t|
     t.string   "name"
     t.string   "image_url"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "duration"
+    t.boolean  "category_flag"
+    t.boolean  "picture_flag"
+    t.integer  "created_by"
+    t.integer  "singled_by"
   end
 
   create_table "hacks_scopes", :force => true do |t|
@@ -34,8 +39,12 @@ ActiveRecord::Schema.define(:version => 20111001153031) do
     t.datetime "done_when"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "scope_id"
+    t.integer  "scope_id"
     t.integer  "cheered_by"
+    t.time     "start_time"
+    t.boolean  "graduated"
+    t.boolean  "dropout"
+    t.integer "party_id"
   end
 
   create_table "scopes", :force => true do |t|
@@ -62,6 +71,7 @@ ActiveRecord::Schema.define(:version => 20111001153031) do
     t.string   "access_token"
     t.string   "access_secret"
     t.string   "image_url"
+    t.datetime "wakeup_time"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
@@ -74,4 +84,8 @@ ActiveRecord::Schema.define(:version => 20111001153031) do
     t.datetime "updated_at"
   end
 
+  create_table "parties_hacktags", :force => true do |t|
+    t.integer "party_id"
+    t.integer "hack_tag_id"
+  end
 end

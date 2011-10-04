@@ -5,6 +5,8 @@ class HackTag < ActiveRecord::Base
   has_many :progres
   has_many :users, :through => :progres
   
+  has_many :hack_tag_follows
+  
   def self.related_hack_tags(hack_tags)
   end
   

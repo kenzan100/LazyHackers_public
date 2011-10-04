@@ -1,5 +1,7 @@
 Lazyhackers4::Application.routes.draw do
 
+  resources :hack_tag_follows
+
   resources :users_scopes
 
   resources :progres do

@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Hack tag:</b>
+  <%= @hack_tag_follow.hack_tag_id %>
+</p>
+
+<p>
+  <b>Following hack tag:</b>
+  <%= @hack_tag_follow.following_hack_tag_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_hack_tag_follow_path(@hack_tag_follow) %> |
+<%= link_to 'Back', hack_tag_follows_path %>

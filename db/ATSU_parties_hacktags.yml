@@ -5,7 +5,8 @@ parties_hacktags:
         - party_id
         - hack_tag_id
         records:
-        - - 50
+
+        - - 50:
           - 8
           - 1
         - - 51
@@ -44,5 +45,4 @@ parties_hacktags:
         - - 62
           - 49
           - 9
-          
-          
+        

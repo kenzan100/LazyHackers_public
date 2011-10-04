@@ -49,7 +49,7 @@
 				<% else %>
 					<%= hidden_field_tag :from_your_set, false %>
 				<% end %>
-				<%= select_tag 'hack_tag_id', options_from_collection_for_select(HackTag.all - @hack_tags, :id, :name), {:include_blank=>'追加', 'data-inline'=>'true', 'data-native-menu'=>'true',:id=>'AddHackTag'} %>
+				<%= select_tag 'hack_tag_id', options_from_collection_for_select(@next_hack_tags, :id, :name), {:include_blank=>'追加', 'data-inline'=>'true', 'data-native-menu'=>'true',:id=>'AddHackTag'} %>
 				<%#= submit_tag 'くわえる', {'data-inline'=>'true'} %>
 			<% end %>
 		</div>
@@ -113,9 +113,7 @@
 			<%= f.submit 'この組み合わせで頑張る' %>
 		<% end %>
 	<% elsif !user_signed_in? %>
-		<button>
-			<%= link_to '新規登録して参加' %>
-		</button>
+		<%= link_to '新規登録して参加', new_user_registration_path, {'data-role'=>'button'} %>
 	<% end %>
 
 	<div id="UsersInThisScope">
@@ -131,36 +129,6 @@
 			<% end %>
 		<% else %>
 		<h3>参加メンバー</h3>
-			<% @users.each do |user| %>
-			<% if user_signed_in? && user.id == current_user.id %>
-			<li style="display:inline-block; padding:3px 10px;">
-				<% if user.screen_name.present? %>
-					<%= user.screen_name %>
-				<% else %>
-					<%= truncate user.email, :length=>16 %>
-				<% end %>
-				<span class="user_id" style="display:none;"><%= user.id %></span>
-				<br>
-				<% link_to('#ActionToUser', "data-rel"=>"dialog", "data-transition"=>"pop", "style"=>"text-decoration:none;") do %>
-				<% if user.image_url.present? %>
-					<%= image_tag user.image_url, :size=>'40x40' %>
-				<% else %>
-					<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
-				<% end %>
-				<% if user.progres.last.success == true %>
-					<%= image_tag 'button_done.png', :size=>'72x40' %>
-				<% else %>
-					<%= image_tag 'button_undone.png', :size=>'72x40' %>
-				<% end %>
-				<% end %>
-				<br>
-				<span style="color:gray; font-size:11px; float:right;">
-					<%= time_ago_in_words(user.progres.last.done_when) %> ago
-				</span>
-			</li>
-			<% end %>
-			<% end %>
-			
 			<% @users.each do |user| %>
 			<li style="display:inline-block; padding:3px 10px;">
 				<% if user.screen_name.present? %>
@@ -241,13 +209,18 @@
 				</li>
 				<% @progres.each do |progre| %>
 					<% if date[0] == progre.done_when.strftime("%Y %m %d") %>
+					<% if progre.hack_tag.singled_by.present? %>
+					<li style="margin-top:-42px; z-index:-10;">
+					<% else %>
 					<li>
+					<% end %>
 						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
 						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;">
 							<%= progre.done_when.hour %>時ごろ
 						</h4>
-						
+												
 						<span style="float:right;">
+						<% if progre.user.present? %>
 							<% if progre.user.screen_name.present? %>
 								<%= progre.user.screen_name %>
 							<% else %>
@@ -258,6 +231,7 @@
 							<% else %>
 								<%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
 							<% end %>
+						<% end %>
 						</span>
 						
 						<% if progre.hack_tag.present? && progre.hack_tag.singled_by.present? && progre.hack_tag.singled_by > 0 %>

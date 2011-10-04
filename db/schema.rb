@@ -11,7 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111002095033) do
+ActiveRecord::Schema.define(:version => 20111003124838) do
+
+  create_table "hack_tag_follows", :force => true do |t|
+    t.integer  "hack_tag_id"
+    t.integer  "greater_hack_tag_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "hack_tags", :force => true do |t|
     t.string   "name"
@@ -23,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20111002095033) do
     t.boolean  "picture_flag"
     t.integer  "created_by"
     t.integer  "singled_by"
+    t.boolean  "root_flag"
   end
 
   create_table "hacks_scopes", :force => true do |t|
@@ -30,6 +38,11 @@ ActiveRecord::Schema.define(:version => 20111002095033) do
     t.integer  "scope_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "parties_hacktags", :force => true do |t|
+    t.integer "party_id"
+    t.integer "hack_tag_id"
   end
 
   create_table "progres", :force => true do |t|
@@ -44,8 +57,9 @@ ActiveRecord::Schema.define(:version => 20111002095033) do
     t.time     "start_time"
     t.boolean  "graduated"
     t.boolean  "dropout"
-    t.integer "party_id"
+    t.integer  "party_id"
   end
+  add_index "progres", ["hack_tag_id"], :name => "index_progres_on_hack_tag_id"
 
   create_table "scopes", :force => true do |t|
     t.string   "image_url"

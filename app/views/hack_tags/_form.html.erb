@@ -11,6 +11,11 @@
     </div>
   <% end %>
 
+  <div>
+	<%= f.label :root_flag %>
+  	<%= f.check_box :root_flag, {'data-role'=>'none'} %>
+  </div>
+
   <div class="field">
     <%= f.label :name %><br />
     <%= f.text_field :name %>
