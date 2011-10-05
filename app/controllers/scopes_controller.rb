@@ -38,7 +38,7 @@ class ScopesController < ApplicationController
     if @scope_to
       flash[:from_your_set] = params[:from_your_set]
       flash[:current_set_id] = params[:scope_id]
-      redirect_to @scope_to, :notice=>'その組み合わせだと、こんな感じです。'
+      redirect_to @scope_to, :notice=>'この深さだと、こんな感じです。'
     else
       @creating_scope = Scope.create_one_more_depth_scope(searching_hack_tag_condition)
       flash[:from_your_set] = params[:from_your_set]
@@ -66,15 +66,9 @@ class ScopesController < ApplicationController
       @friends = []
       @feed = []
       
-      @hack_tags_singled = []
       current_user.scopes.each do |my_scope|
         users_followers = HackTag.check_intersection(my_scope.hack_tags)
         @friends.push(users_followers[1])
-        my_scope.hack_tags.each do |my_scope_hack_tag|
-          unless my_scope_hack_tag.singled_by.blank?
-            @hack_tags_singled.push(my_scope_hack_tag)
-          end
-        end
       end
       unless @friends.blank?
         @friends.flatten!.uniq!
@@ -82,13 +76,8 @@ class ScopesController < ApplicationController
       
       current_user.scopes.each do |my_scope|
         @friends.each do |friend|
-          friend.progres.order('updated_at DESC').limit(10).where(:hack_tag_id=>my_scope.hack_tags.where('singled_by IS NULL').last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+          friend.progres.order('done_when DESC').limit(5).where(:hack_tag_id=>my_scope.hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
             @feed.push(u_progre)
-          end
-          @hack_tags_singled.each do |single_hack_tag|
-            friend.progres.order('updated_at DESC').limit(10).where(:hack_tag_id=>single_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
-              @feed.push(u_progre)
-            end
           end
         end
       end
@@ -121,17 +110,12 @@ class ScopesController < ApplicationController
     end
     
     @progre = Progre.new
-    
     @scope = Scope.find(params[:id])
-    
-    @hack_tags = []
-    @hack_tags_singled = []
-    @scope.hack_tags.each do |hack_tag|
-      if hack_tag.singled_by.blank?
-        @hack_tags.push(hack_tag)
-      else
-        @hack_tags_singled.push(hack_tag)
-      end
+    @hack_tags = @scope.hack_tags
+    if @hack_tags.count == 1
+      @shack_tags = @hack_tags
+    else
+      @shack_tags = @hack_tags.where('root_flag IS NULL OR root_flag = ?', false)
     end
     
     @next_hack_tags = []
@@ -140,28 +124,35 @@ class ScopesController < ApplicationController
         @next_hack_tags.push(ht)
       end
     end
-    create_new_icon = HackTag.where(:name=>'新規作成').first
-    @next_hack_tags.push(create_new_icon)
+    
+    create_select_option_for_creation = HackTag.where(:name=>'新規作成').first
+    @next_hack_tags.push(create_select_option_for_creation)
     
     users_followers = HackTag.check_intersection(@hack_tags)
-    
     @users = users_followers[0]
     @users.uniq!
     
     @five_am_issue = Hash.new
     @progres = []
+    
     @users.each do |user|
-      @hack_tags_singled.each do |single_hack_tag|
-        if user.id == single_hack_tag.singled_by
-          user.progres.where(:hack_tag_id=>single_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+      found_deeper_position = 0
+      @next_hack_tags.each do |next_hack_tag|
+        if next_hack_tag.progres.exists?(:user_id=>user.id, :success=>true)
+          found_deeper_position = 1
+          user.progres.order('done_when DESC').limit(10).where(:hack_tag_id=>next_hack_tag.id, :success=>true).group("DATE(done_when)").each do |u_progre|
             @progres.push(u_progre)
           end
         end
       end
-      user.progres.where(:hack_tag_id=>@hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
-        @progres.push(u_progre)
+      if found_deeper_position == 0
+        user.progres.order('done_when DESC').limit(10).where(:hack_tag_id=>@hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
+          @progres.push(u_progre)
+        end
       end
+    end
       
+    @users.each do |user|
       if Time.now.hour < 5
   		  #やった、まだ、の朝5時を境にした判定
   		  tf = user.progres.where('Date(done_when)=? AND user_id=?', Date.yesterday, user.id).exists?(:success=>true) || user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true)

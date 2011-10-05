@@ -30,10 +30,10 @@
 			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
 			<p style="margin-left:20px; margin-top:0; margin-bottom:2px; font-weight:bold;">
 			<% my_scope.hack_tags.each_with_index do |mhack_tag, i| %>
-				<% if i > 0 && mhack_tag.singled_by.blank? %>
+				<% if i > 0  %>
 					<%= mhack_tag.name %>
 				<% end %>
-				<% if mhack_tag.root_flag == true && my_scope.hack_tags.where(:root_flag=>false).length == 0 %>
+				<% if mhack_tag.root_flag == true && my_scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false).count == 0 %>
 					<%= mhack_tag.name %>
 				<% end %>
 			<% end %>
@@ -51,7 +51,7 @@
 		</li>
 		<% end %>
 		<li data-role="list-divider">
-			他にもやってみる
+			他にも習慣ありますか？
 		</li>
 	<% else %>
 	<li data-role="list-divider">何を習慣にしましょうか？</li>
@@ -62,14 +62,17 @@
 	<% @scopes.each do |scope| %>
 		<li style="">
 			<% link_to from_search_scope_path(scope) do %>
-				<% if scope.hack_tags.present? %>
-					<%= image_tag scope.hack_tags.first.image_url, {'class'=>'ui-li-thumb'}%>
-					<% scope.hack_tags.each do |hack_tag| %>
-					<% if hack_tag.singled_by.blank? %>
-					 <%= hack_tag.name %>
+				<%= image_tag scope.hack_tags.first.image_url, {'class'=>'ui-li-thumb'}%>
+				<h3>
+					<%= scope.hack_tags.first.name %>
+				</h3>
+				
+				<p style="margin-top:5px;">
+					<% HackTagFollow.where(:greater_hack_tag_id=>scope.hack_tags.first.id).each do |hacktagfollow| %>
+						<%= HackTag.find(hacktagfollow.hack_tag_id).name %>, 
 					<% end %>
-					<% end %>
-				<% end %>
+				</p>
+				
 			<% end %>
 		</li>
 	<% end %>
@@ -118,7 +121,7 @@
 						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
 						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
 </h4>
-						<p style="display:inline;"><%= progre.hack_tag.name %></p>
+						<p style="display:inline;"><% Scope.find(progre.scope_id).hack_tags.where('root_flag IS NULL OR root_flag = ?', false).each do |hack_tag|%><%= hack_tag.name %><%end%></p>
 						<span style="float:right;">
 						<% if progre.user.present? %>
 							<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>

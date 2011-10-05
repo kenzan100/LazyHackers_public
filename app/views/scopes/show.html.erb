@@ -1,6 +1,6 @@
 <div data-role="page" id="Scope">
 	<div data-role="header" id="Header">
-	<h1>Scope Here</h1>
+	<h1><%= @shack_tags.first.name %></h1>
 	<h1 style="display:none;">
 		Editing..
 	</h1>
@@ -21,8 +21,9 @@
 		<% if @hack_tags.blank? %>
 			<h3>All LazyHackers</h3>
 		<% end %>
-		<% @hack_tags.each do |hack_tag| %>
-			<span style="display:inline-block; font-size:200%; margin-top:0;"><%= hack_tag.name %></span>
+		<% @shack_tags.each do |hack_tag| %>
+			<%if hack_tag.image_url.present?%><%=image_tag hack_tag.image_url, :size=>'40x40'%><%else%>
+			<span style="display:inline-block; font-size:200%; margin-top:0;"><%= hack_tag.name %></span><%end%>
 			<span style="display:inline-block;">
 			<% form_tag search_scope_from_hack_tags_scope_path, {:id=>'Loosen', :method=>:post, :style=>'display:inline-block; height:35px; margin-left:-10px;'} do %>
 				<%= hidden_field_tag :add_flag, false %>
@@ -73,8 +74,8 @@
 	<% end %>
 	<% end %>
 	
-	<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:success=>true, :scope_id=>@scope.id) %>
 	<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
+	<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) %>
 	<div id="CommitHere" style="display:block;">
 		<% form_tag create_all_progre_path, {:method=>:post} do %>
 		<%= submit_tag 'やったよ', {'data-icon'=>''} %>
@@ -83,12 +84,6 @@
 				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
 			<% end %>
 			
-			<% @hack_tags_singled.each do |hts| %>
-				<% if hts.singled_by == current_user.id %>
-					<%= hidden_field_tag "hack_tag_singled_ids[]", hts.id %>
-				<% end %>
-			<% end %>
-
 			<%= hidden_field_tag :scope_id, @scope.id %>
 			<%= hidden_field_tag :user_id, current_user.id %>
 		<% end %>
@@ -156,10 +151,16 @@
 						<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
 					<% end %>
 					
-					<% if @five_am_issue.fetch(user.id) == true %>
-						<%= image_tag 'button_done.png', :size=>'72x40' %>
+					<% if user.id == current_user.id %>
+						<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) %><%= image_tag 'button_undone.png', :size=>'72x40' %>
+						<% else %><%= image_tag 'button_done.png', :size=>'72x40' %>
+						<% end %>
 					<% else %>
-						<%= image_tag 'button_undone.png', :size=>'72x40' %>
+						<% if @five_am_issue.fetch(user.id) == true %>
+							<%= image_tag 'button_done.png', :size=>'72x40' %>
+						<% else %>
+							<%= image_tag 'button_undone.png', :size=>'72x40' %>
+						<% end %>
 					<% end %>
 				
 				<% end %>
@@ -208,13 +209,14 @@
 	<div data-role="header" id="Header">
 		<h1><% @hack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 		<% if user_signed_in? %>
-			<%= link_to "Sign Out", destroy_user_session_path %>
+			<%= link_to "Back", :back %>
 		<% else %>
 			<%= link_to "Sign up here", new_user_registration_path %>
 		<% end %>
 		<%= link_to "home", scopes_path %>
 	</div>
 	<div data-role="content">
+		<% if user_signed_in? %>
 		<ul data-role="listview" style="margin-bottom:15px;">
 			<li data-role="fieldcontain">
 				<% form_for @progre do |f| %>
@@ -234,50 +236,49 @@
 				</span>
 			</li>
 		</ul>
+		<% end %>
 		<ul data-role="listview" style="" data-filter="true">
 			<% @progres_dates.each do |date| %>
 				<li data-role="list-divider" style="height: 10px;">
-					<span style="float:right;">
-						<%= date[0] %>
-					</span>
+					<span style="float:right;"><%= date[0] %></span>
 				</li>
 				<% @progres.each do |progre| %>
 					<% if date[0] == progre.done_when.strftime("%Y %m %d") %>
-					<% if progre.hack_tag.singled_by.present? %>
-					<li style="margin-top:-42px; z-index:-10;">
-					<% else %>
 					<li>
-					<% end %>
+					<% if progre.scope_id %>
+						<% link_to (Scope.find(progre.scope_id)) do %>
+							<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
+							<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
+								</h4>
+							<p style="display:inline;"><% Scope.find(progre.scope_id).hack_tags.where('root_flag IS NULL OR root_flag = ?', false).each do |hack_tag|%><%=hack_tag.name%><%end%></p>
+							<span style="float:right;"><% if progre.user.present? %>
+								<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
+								<% else %><%= truncate progre.user.email, :length=>12 %>
+								<% end %>
+								<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
+								<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
+								<% end %>
+								<% end %></span>
+							<% if progre.comment.present? %><div style="display:inline-block; margin-top:-10px; width:60%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
+						<% end %>
+					<% else %>
 						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
-						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;">
-							<%= progre.done_when.hour %>時ごろ
-						</h4>
-						
-						<p style="display:inline;">
-							<%= progre.hack_tag.name %>
-						</p>
-						
-						<span style="float:right;">
-						<% if progre.user.present? %>
-							<% if progre.user.screen_name.present? %>
-								<%= progre.user.screen_name %>
-							<% else %>
-								<%= truncate progre.user.email, :length=>12 %>
+						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
+							</h4>
+						<p style="display:inline;"><%= progre.hack_tag.name %>
+							</p>
+						<span style="float:right;"><% if progre.user.present? %>
+							<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
+							<% else %><%= truncate progre.user.email, :length=>12 %>
 							<% end %>
-							<% if progre.user.image_url.present? %>
-								<%= image_tag progre.user.image_url, {:size=>'25x25'} %>
-							<% else %>
-								<%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
+							<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
+							<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
 							<% end %>
-						<% end %>
-						</span>
-						<% if progre.comment.present? %>
-							<div style="display:inline-block; margin-top:-10px; width:60%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
-							<span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span>
-							</div>
-						<% end %>
-					</li>
+							<% end %></span>
+						<% if progre.comment.present? %><div style="display:inline-block; margin-top:-10px; width:60%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
 					<% end %>
+					</li>
+				<% end %>
 				<% end %>
 			<% end %>
 		</ul>
