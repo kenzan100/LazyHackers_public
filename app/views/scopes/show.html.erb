@@ -61,6 +61,7 @@
 		<% end %>
 	</div>
 	
+	<% if user_signed_in? %>
 	<% form_tag create_hack_tag_and_hacks_scope_hack_tags_path, {:method=>:post, :id=>'WantingNewTag', :style=>'display:none;'} do %>
 		<%= hidden_field_tag :wanting_new_tag, true %>
 		<%= hidden_field_tag :scope_id, @scope.id %>
@@ -69,6 +70,7 @@
 		<%= text_field_tag :image_url, '', {'placeholder'=>'URL', 'style'=>'display:none;'}%>
 		<%= hidden_field_tag :scope_id, @scope.id %>
 		<%= submit_tag '追加', {'data-theme'=>'e'} %>
+	<% end %>
 	<% end %>
 	
 	<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:success=>true, :scope_id=>@scope.id) %>
