@@ -25,6 +25,7 @@ Lazyhackers4::Application.routes.draw do
     member do
       post 'search_scope_from_hack_tags'
       post 'cheering'
+      get 'from_search'
     end
     collection do
       get 'list'

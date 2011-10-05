@@ -11,8 +11,8 @@
 
 <% @hack_tag_follows.each do |hack_tag_follow| %>
   <tr>
-    <td><%= HackTag.find(hack_tag_follow.greater_hack_tag_id).name %>(id:<%= hack_tag_follow.greater_hack_tag_id %>)</td>
-    <td><%= HackTag.find(hack_tag_follow.hack_tag_id).name %>(id:<%= hack_tag_follow.hack_tag_id %>)</td>
+    <td><% if HackTag.exists?(:id=>hack_tag_follow.greater_hack_tag_id) %> <%= HackTag.find(hack_tag_follow.greater_hack_tag_id).name %><% end %>(id:<%= hack_tag_follow.greater_hack_tag_id %>)</td>
+    <td><% if HackTag.exists?(hack_tag_follow.hack_tag_id) %> <%= HackTag.find(hack_tag_follow.hack_tag_id).name %><% end %>(id:<%= hack_tag_follow.hack_tag_id %>)</td>
     <td><%= link_to 'Show', hack_tag_follow %></td>
     <td><%= link_to 'Edit', edit_hack_tag_follow_path(hack_tag_follow) %></td>
     <td><%= link_to 'Destroy', hack_tag_follow, :confirm => 'Are you sure?', :method => :delete %></td>

@@ -2,9 +2,10 @@
 
 <table>
   <tr>
+	<th>ID</th>
     <th>Name</th>
     <th>Image url</th>
-    <th></th>
+    <th>Singled by</th>
     <th></th>
     <th></th>
   </tr>
@@ -14,6 +15,7 @@
 	<td><%= hack_tag.id %></td>
     <td><%= hack_tag.name %></td>
     <td><%= image_tag hack_tag.image_url %></td>
+	<td><%= hack_tag.singled_by %></td>
     <td><%= link_to 'Show', hack_tag %></td>
     <td><%= link_to 'Edit', edit_hack_tag_path(hack_tag) %></td>
     <td><%= link_to 'Destroy', hack_tag, :confirm => 'Are you sure?', :method => :delete %></td>

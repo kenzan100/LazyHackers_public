@@ -41,12 +41,32 @@ class HackTagsController < ApplicationController
 
   # POST
   def create_hack_tag_and_hacks_scope
-    @hack_tag = HackTag.new(:name=>params[:name], :image_url=>params[:image_url], :singled_by=>params[:singled_by])
-    @hack_tag.save
-    @hacks_scope = HacksScope.new(:hack_tag_id=>@hack_tag.id, :scope_id=>params[:scope_id])
-    @hacks_scope.save
+    hack_tags = Scope.find(params[:scope_id]).hack_tags
     
-    redirect_to Scope.find(params[:scope_id]), :notice=>'あなたのその報告が、他の人を勇気づけます。ありがとう。'
+    new_hack_tag = HackTag.new(:name=>params[:name], :image_url=>params[:image_url])
+    new_hack_tag.save
+    hack_tag_follow = HackTagFollow.new(:greater_hack_tag_id=>hack_tags.last.id, :hack_tag_id=>new_hack_tag.id)
+    hack_tag_follow.save
+    
+    hack_tags.push(new_hack_tag)
+    
+    @creating_scope = Scope.create_one_more_depth_scope(hack_tags)
+		users_scope = UsersScope.new(:user_id=>current_user.id, :scope_id=>@creating_scope.id)
+		users_scope.save
+		
+    hack_tags.each do |hack_tag|
+      unless UsersHacktag.exists?(:user_id=>current_user.id, :hack_tag_id=>hack_tag.id)
+        users_hacktag = UsersHacktag.new(:user_id=>current_user.id, :hack_tag_id=>hack_tag.id)
+        users_hacktag.save
+      end
+      progre = Progre.new(:user_id=>current_user.id, :success=>false, :done_when=>Time.now)
+      progre.hack_tag_id = hack_tag.id
+      progre.scope_id = @creating_scope.id
+      progre.save
+    end
+    
+    flash[:notice] = 'あなたのタグが登録されました！あまりにやってないと部屋は消えちゃうんで、がんばってね。' 
+    redirect_to @creating_scope
   end
 
   # POST /hack_tags

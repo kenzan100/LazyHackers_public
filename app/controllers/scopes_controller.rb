@@ -20,37 +20,30 @@ class ScopesController < ApplicationController
     else
       searching_hack_tag_condition = from_current_scope.hack_tags - adding_removing_hack_tag
     end
-    
+  
     Scope.all.each do |scope|
       if scope.hack_tags == searching_hack_tag_condition
         @scope_to = scope
         break
       end
     end
-    
+  
     if flash[:from_your_set] == 'true'
       params[:from_your_set] = 'true'
       params[:scope_id] = flash[:current_set_id]
+    elsif flash[:from_search] == 'true'
+      flash.keep(:from_search)
     end
-    
+  
     if @scope_to
       flash[:from_your_set] = params[:from_your_set]
       flash[:current_set_id] = params[:scope_id]
       redirect_to @scope_to, :notice=>'その組み合わせだと、こんな感じです。'
     else
-      @creating_scope = Scope.new(:image_url=>'lazycat.png')
-      @creating_scope.save
-      searching_hack_tag_condition.each do |shack_tag|
-        creating_hacks_scope = HacksScope.new(:scope_id=>@creating_scope.id, :hack_tag_id=>shack_tag.id)
-        creating_hacks_scope.save
-        if shack_tag.image_url.present?
-          @creating_scope.image_url = shack_tag.image_url
-          @creating_scope.save
-        end
-      end
+      @creating_scope = Scope.create_one_more_depth_scope(searching_hack_tag_condition)
       flash[:from_your_set] = params[:from_your_set]
       flash[:current_set_id] = params[:scope_id]
-      redirect_to @creating_scope, :notice=>'その組み合わせだと、こんな感じです。'
+      redirect_to @creating_scope, :notice=>'New! その組み合わせだと、こんな感じです。'
     end
   end
   
@@ -60,7 +53,7 @@ class ScopesController < ApplicationController
     
     @scopes = []
     Scope.all.each do |scope|
-      if scope.hack_tags.length == 1
+      if scope.hack_tags.where('singled_by IS NULL').length == 1
         HackTag.where(:root_flag=>true).each do |root_ht|
           if scope.hack_tags.exists?(:id=>root_ht.id)
             @scopes.push(scope)
@@ -103,12 +96,18 @@ class ScopesController < ApplicationController
       @feed = @feed.sort{|a, b| b.done_when<=>a.done_when}
       @feed_dates = @feed.group_by{|e| e.done_when.strftime("%Y %m %d")}
     end
-
     
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @scopes }
     end
+  end
+
+  # GET
+  def from_search
+    scope = Scope.find(params[:id])
+    flash[:from_search] = 'true'
+    redirect_to scope, :notice=>'追加を押すと、より小さな単位になります。'
   end
 
   # GET /scopes/1
@@ -117,9 +116,11 @@ class ScopesController < ApplicationController
     if flash[:from_your_set] == 'true'
       flash.keep(:from_your_set)
       flash.keep(:current_set_id)
-    else
-      #flash.now[:notice] = 'ここには、これだけの人がいます。プラスボタンを押すと、範囲を狭めたり、広げたりできます。'
+    elsif flash[:from_search] == 'true'
+      flash.keep(:from_search)
     end
+    
+    @progre = Progre.new
     
     @scope = Scope.find(params[:id])
     
@@ -139,17 +140,15 @@ class ScopesController < ApplicationController
         @next_hack_tags.push(ht)
       end
     end
+    create_new_icon = HackTag.where(:name=>'新規作成').first
+    @next_hack_tags.push(create_new_icon)
     
     users_followers = HackTag.check_intersection(@hack_tags)
     
     @users = users_followers[0]
-    @followers = users_followers[1]
     @users.uniq!
-    @followers.uniq!
     
-    #progres_feed = Progre.check_intersection(@hack_tags)
-    #@feed = progres_feed[1]
-    #@progres = progres_feed[0]
+    @five_am_issue = Hash.new
     @progres = []
     @users.each do |user|
       @hack_tags_singled.each do |single_hack_tag|
@@ -162,15 +161,20 @@ class ScopesController < ApplicationController
       user.progres.where(:hack_tag_id=>@hack_tags.last.id, :success=>true).group("DATE(done_when)").each do |u_progre|
         @progres.push(u_progre)
       end
+      
+      if Time.now.hour < 5
+  		  #やった、まだ、の朝5時を境にした判定
+  		  tf = user.progres.where('Date(done_when)=? AND user_id=?', Date.yesterday, user.id).exists?(:success=>true) || user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true)
+      	@five_am_issue[user.id] = tf
+  		else
+  			@five_am_issue.store(user.id, user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true))
+  		end
     end
     @progres = @progres.sort{|a, b| b.done_when<=>a.done_when}
     @progres_dates = @progres.group_by{|e| e.done_when.strftime("%Y %m %d")}
     
-    #次の行は、プログレスの幅をもっと広げた状態です。
-    #@progres = h_progre_lengths.sort{|a, b| b[0]<=>a[0]}.first[1].progres
-
     @users_scope = UsersScope.new
-
+		    
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @scope }

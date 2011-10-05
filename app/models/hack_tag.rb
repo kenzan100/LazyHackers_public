@@ -8,7 +8,27 @@ class HackTag < ActiveRecord::Base
   
   has_many :hack_tag_follows
   
-  def self.related_hack_tags(hack_tags)
+  def self.clean_up_singled_by(hack_tags)
+    hack_tags.each do |hack_tag|
+      if hack_tag.singled_by.present?
+        hack_tag.destroy
+      end
+    end
+  end
+  
+  def self.check_exit(hack_tags)
+    hack_tags.each do |hack_tag|
+      dropout = 0
+      hack_tag.users.each do |user|
+        if user.progres.exists?(:dropout=>true)
+          dropout += 1
+        end
+      end
+
+      if hack_tag.users.group(:id).each.count == dropout
+        hack_tag.destroy
+      end
+    end
   end
   
   def self.check_intersection(hack_tags)

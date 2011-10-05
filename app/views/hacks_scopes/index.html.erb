@@ -2,9 +2,8 @@
 
 <table>
   <tr>
-    <th></th>
-    <th>Scope</th>
-	<th>HackTag</th>
+    <th>Scope id</th>
+	<th>HackTag id</th>
     <th></th>
     <th></th>
     <th></th>
@@ -13,11 +12,6 @@
 <% @hacks_scopes.each do |hacks_scope| %>
   <tr>
     <td><%= hacks_scope.scope_id %></td>
-	<% if Scope.exists?(:id=>hacks_scope.scope_id) %>
-	<td><%= image_tag Scope.find(hacks_scope.scope_id).image_url, :size=>'25x25' %></td>
-	<% else %>
-	<td>NIL!!</td>
-	<% end %>
     <td><%= hacks_scope.hack_tag_id %></td>
     <td><%= link_to 'Show', hacks_scope %></td>
     <td><%= link_to 'Edit', edit_hacks_scope_path(hacks_scope) %></td>

@@ -2,6 +2,61 @@ class Progre < ActiveRecord::Base
   belongs_to :hack_tag
   belongs_to :user
   
+  def self.create_all_success(hack_tags, user_id, scope_id)
+    hack_tags.each do |hack_tag|
+      progre = Progre.new(:hack_tag_id=>hack_tag.id, :done_when=>Time.now)
+      progre.success = true
+      progre.scope_id = scope_id
+      progre.user_id = user_id
+      progre.save
+    end
+  end
+  
+  def self.create_all_success_with_comment(hack_tags, user_id, scope_id, comment)
+    hack_tags.each do |hack_tag|
+      progre = Progre.new(:hack_tag_id=>hack_tag.id, :done_when=>Time.now)
+      progre.success = true
+      progre.scope_id = scope_id
+      progre.user_id = user_id
+      progre.comment = comment
+      progre.save
+    end
+  end
+  
+  def self.check_dropout(users, hack_tags)
+    two_daysago = Date.today - 2.days
+    today = Date.today
+    hangin_theres = []
+    users.each do |user|
+      hack_tags.each do |hack_tag|
+        hangin_there = 0
+        last_done = user.progres.where(:hack_tag_id=>hack_tag.id).order('done_when DESC').first
+        if last_done.present?
+          (two_daysago..today).each do |each_day|
+            if each_day.to_s == last_done.done_when.strftime("%Y-%m-%d")
+              hangin_there = 1
+            end
+                      
+            if hangin_there == 0
+              dropout_record = last_done.clone
+              dropout_record.dropout = true
+              dropout_record.save
+            else
+              user.progres.where(:hack_tag_id=>hack_tag.id).each do |recover|
+                recover.dropout = false
+                recover.save
+              end
+            end
+            
+            hangin_theres.push(hangin_there)
+          end
+        end
+      end
+    end
+    
+    return hangin_theres
+  end
+  
   def self.check_intersection(hack_tags)
     
     progres = []

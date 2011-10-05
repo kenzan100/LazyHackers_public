@@ -54,18 +54,8 @@ class ProgresController < ApplicationController
       end
     end
     
-    params[:hack_tag_ids].each do |hack_tag_id|
-      progre = Progre.new
-      progre.hack_tag_id = hack_tag_id
-      progre.success = true
-      progre.done_when = Time.now
-      progre.scope_id = params[:scope_id]
-      if user_signed_in?
-        progre.user_id = params[:user_id]
-      end
-      progre.save
-    end
-    
+    hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
+    Progre.create_all_success(hack_tags, params[:user_id], params[:scope_id])
     
     @scope = Scope.find(params[:scope_id])
     
@@ -75,15 +65,26 @@ class ProgresController < ApplicationController
   # POST /progres
   # POST /progres.xml
   def create
-    @progre = Progre.new(params[:progre])
-
-    respond_to do |format|
-      if @progre.save
-        format.html { redirect_to(@progre, :notice => 'Progre was successfully created.') }
-        format.xml  { render :xml => @progre, :status => :created, :location => @progre }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @progre.errors, :status => :unprocessable_entity }
+    
+    if params[:create_all] == 'true'
+      hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
+      Progre.create_all_success_with_comment(hack_tags, params[:this_user_id], params[:this_scope_id], params[:this_comment])
+    else
+      @progre = Progre.new(params[:progre])
+    end
+    
+    if params[:create_all] == 'true'
+      @scope = Scope.find(params[:this_scope_id].to_i)
+      redirect_to @scope, :notice=>'ありがとう！あなたのtipsは皆を救うことでしょう。'
+    else
+      respond_to do |format|
+        if @progre.save
+          format.html { redirect_to(@progre, :notice => 'Progre was successfully created.') }
+          format.xml  { render :xml => @progre, :status => :created, :location => @progre }
+        else
+          format.html { render :action => "new" }
+          format.xml  { render :xml => @progre.errors, :status => :unprocessable_entity }
+        end
       end
     end
   end

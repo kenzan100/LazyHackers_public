@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111004055024) do
+ActiveRecord::Schema.define(:version => 20111005093820) do
 
   create_table "hack_tag_follows", :force => true do |t|
     t.integer  "hack_tag_id"
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(:version => 20111004055024) do
     t.boolean  "graduated"
     t.boolean  "dropout"
     t.integer  "party_id"
+    t.string   "comment"
   end
 
   add_index "progres", ["hack_tag_id"], :name => "index_progres_on_hack_tag_id"

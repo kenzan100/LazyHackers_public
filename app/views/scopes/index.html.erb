@@ -1,9 +1,10 @@
 <div data-role="page" id="YourScope">
 	<div data-role="header" id="Header">
-	<h1>LazyHackers</h1>
 	<% if user_signed_in? %>
+		<h1><%= current_user.screen_name %></h1>
 		<%= link_to "Sign Out", destroy_user_session_path %>
 	<% else %>
+		<h1>LazyHackers</h1>
 		<%= link_to "Sign up here", new_user_registration_path %>
 	<% end %>
 	<%= link_to "home", scopes_path %>
@@ -12,6 +13,9 @@
 		<%= notice %><%= alert %>
 	</p>
 	<div data-role="content">
+	
+	<%# HackTag.check_exit(HackTag.where(:id=>151)) %>
+	<%#= Progre.check_dropout(User.where(:id=>1), HackTag.all) %>
 	<%# UsersHacktag.update_from_progres(Progre.all) %>
 	<%# Progre.from_updated_at_to_done_when %>
 	<%# Progre.from_party_id_to_hack_tag_id %>
@@ -25,8 +29,11 @@
 		<% link_to(my_scope) do %>
 			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
 			<p style="margin-left:20px; margin-top:0; margin-bottom:2px; font-weight:bold;">
-			<% my_scope.hack_tags.each do |mhack_tag| %>
-				<% if mhack_tag.singled_by.blank? %>
+			<% my_scope.hack_tags.each_with_index do |mhack_tag, i| %>
+				<% if i > 0 && mhack_tag.singled_by.blank? %>
+					<%= mhack_tag.name %>
+				<% end %>
+				<% if mhack_tag.root_flag == true && my_scope.hack_tags.where(:root_flag=>false).length == 0 %>
 					<%= mhack_tag.name %>
 				<% end %>
 			<% end %>
@@ -40,7 +47,7 @@
 			<% end %>
 			</p>
 		<% end %>
-		<%= link_to 'RemoveFromMyScope', my_scope.users_scopes.where(:user_id=>current_user.id).first, :confirm=>'Sure about this?', :method=>:delete %>
+		<%= link_to 'RemoveFromMyScope', my_scope.users_scopes.where(:user_id=>current_user.id).first, :confirm=>'このセットを消しますか？', :method=>:delete %>
 		</li>
 		<% end %>
 		<li data-role="list-divider">
@@ -54,11 +61,13 @@
 	<ul data-role="listview" data-divider-theme="e">
 	<% @scopes.each do |scope| %>
 		<li style="">
-			<% link_to(scope) do %>
+			<% link_to from_search_scope_path(scope) do %>
 				<% if scope.hack_tags.present? %>
 					<%= image_tag scope.hack_tags.first.image_url, {'class'=>'ui-li-thumb'}%>
 					<% scope.hack_tags.each do |hack_tag| %>
+					<% if hack_tag.singled_by.blank? %>
 					 <%= hack_tag.name %>
+					<% end %>
 					<% end %>
 				<% end %>
 			<% end %>
@@ -94,6 +103,7 @@
 	</div>
 	<div data-role="content">
 		<ul data-role="listview" style="" data-filter="true">
+			<% if user_signed_in? %>
 			<% @feed_dates.each do |date| %>
 				<li data-role="list-divider" style="height: 10px;">
 					<span style="float:right;">
@@ -102,22 +112,40 @@
 				</li>
 				<% @feed.each do |progre| %>
 					<% if date[0] == progre.done_when.strftime("%Y %m %d") %>
-					<% if progre.hack_tag.singled_by.present? %>
-					<li style="margin-top:-42px; z-index:-10;">
-					<% else %>
 					<li>
+					<% if progre.scope_id %>
+					<% link_to (Scope.find(progre.scope_id)) do %>
+						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
+						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
+</h4>
+						<p style="display:inline;"><%= progre.hack_tag.name %></p>
+						<span style="float:right;">
+						<% if progre.user.present? %>
+							<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
+							<% else %><%= truncate progre.user.email, :length=>12 %>
+							<% end %>
+							<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
+							<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
+							<% end %>
+						<% end %>
+						</span>
+						
+						<% if progre.comment.present? %>
+							<div style="display:block; margin-top:-10px; width:80%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
+							<span style="padding:5px; float:right; margin-right:-15px; background:white;">
+							<%= progre.comment %>
+							</span>
+							</div>
+						<% end %>
 					<% end %>
+					<% else %>
 						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
 						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;">
 							<%= progre.done_when.hour %>時ごろ
 						</h4>
-						
 						<p style="display:inline;">
-							<% if progre.hack_tag.singled_by.blank? %>
-								<%= progre.hack_tag.name %>
-							<% end %>
+							<%= progre.hack_tag.name %>
 						</p>
-						
 						<span style="float:right;">
 						<% if progre.user.present? %>
 							<% if progre.user.screen_name.present? %>
@@ -133,25 +161,22 @@
 						<% end %>
 						</span>
 						
-						<% if progre.hack_tag.present? && progre.hack_tag.singled_by.present? && progre.hack_tag.singled_by > 0 %>
-						</li>
-						<li style="min-height:30px;">
-							<% form_tag create_hack_tag_and_hacks_scope_hack_tags_path, {:method=>:post, 'style'=>'float:right;'} do %>
-								<%= hidden_field_tag :singled_by, current_user.id %>
-								<%= hidden_field_tag :name, progre.hack_tag.name, {'placeholder'=>'ノウハウや成果'} %>
-								<%= hidden_field_tag :image_url, '', {'placeholder'=>'URL', 'style'=>'display:none;'}%>
-
-								<%#= hidden_field_tag :scope_id, @scope.id %>
-
-								<%= submit_tag '私も！', {:class=>'MeToo', 'data-icon'=>'check', 'data-iconpos'=>'notext'} %>
-							<% end %>
-							<div style="display:inline-block; margin-top:-10px; width:80%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
-							<span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.hack_tag.name %></span>
+						<% if progre.comment.present? %>
+							<div style="display:block; margin-top:-10px; width:80%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
+							<span style="padding:5px; float:right; margin-right:-15px; background:white;">
+							<%= progre.comment %>
+							</span>
 							</div>
 						<% end %>
+					<% end %>
 					</li>
 					<% end %>
 				<% end %>
+			<% end %>
+			<% else %>
+				<li>
+					サインインすると、自分とみんなの履歴がみれるようになります。
+				</li>
 			<% end %>
 		</ul>
 	</div>

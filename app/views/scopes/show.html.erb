@@ -1,32 +1,30 @@
 <div data-role="page" id="Scope">
-<div data-role="header" id="Header">
-	<h1>
-		<% @hack_tags.each do |hack_tag| %><%= hack_tag.name %> <% end %>
-	</h1>
+	<div data-role="header" id="Header">
+	<h1>Scope Here</h1>
 	<h1 style="display:none;">
 		Editing..
 	</h1>
 	<% if user_signed_in? %>
-		<%= link_to "Sign Out", destroy_user_session_path %>
+		<%= link_to "Back", :back %>
 	<% else %>
 		<%= link_to "Sign In", new_user_session_path %>
 	<% end %>
 	<%= link_to "home", scopes_path %>
 </div>
-
-<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
-<%= notice %>
-<%= alert %>
-</p>
-
-<div data-role="content">
+	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
+	<%= notice %><%= alert %>
+	<%= flash[:temp] %>
+	<%= flash[:oraora] %>
+	</p>
+	<div data-role="content">
 	<div id="DefiningScope">
 		<% if @hack_tags.blank? %>
 			<h3>All LazyHackers</h3>
 		<% end %>
 		<% @hack_tags.each do |hack_tag| %>
-			<h3 style="display:inline-block; font-size:200%; margin-top:0;"><%= hack_tag.name %>
-			<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post, :style=>'display:inline-block; height:35px; margin-left:-10px;'} do %>
+			<span style="display:inline-block; font-size:200%; margin-top:0;"><%= hack_tag.name %></span>
+			<span style="display:inline-block;">
+			<% form_tag search_scope_from_hack_tags_scope_path, {:id=>'Loosen', :method=>:post, :style=>'display:inline-block; height:35px; margin-left:-10px;'} do %>
 				<%= hidden_field_tag :add_flag, false %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
@@ -37,11 +35,15 @@
 				<% end %>
 				<%= submit_tag 'とりのぞく', {'data-icon'=>'delete', 'data-iconpos'=>'notext'} %>
 			<% end %>
-			</h3>
+			</span>
 		<% end %>
 		
-		<div id="Focus" style="display:inline-block;">
-			<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post, :id=>'AddingHackTag'} do %>
+		<% if flash[:from_search]=='true' %>
+			<% hoge = 'display:inline-block!important;'%>
+		<% else %>
+			<% hoge = 'display:inline-block;'%>
+		<% end %>
+		<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post, :id=>'AddingHackTag', :style=>hoge} do %>
 				<%= hidden_field_tag :add_flag, true %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
@@ -52,83 +54,90 @@
 				<%= select_tag 'hack_tag_id', options_from_collection_for_select(@next_hack_tags, :id, :name), {:include_blank=>'追加', 'data-inline'=>'true', 'data-native-menu'=>'true',:id=>'AddHackTag'} %>
 				<%#= submit_tag 'くわえる', {'data-inline'=>'true'} %>
 			<% end %>
-		</div>
+		<% unless flash[:from_search]=='true' %>
 		<button id="Departure" data-inline="true" style="" data-icon="plus" data-iconpos="notext">
 			編集
 		</button>
+		<% end %>
 	</div>
 	
+	<% form_tag create_hack_tag_and_hacks_scope_hack_tags_path, {:method=>:post, :id=>'WantingNewTag', :style=>'display:none;'} do %>
+		<%= hidden_field_tag :wanting_new_tag, true %>
+		<%= hidden_field_tag :scope_id, @scope.id %>
+		<%= hidden_field_tag :singled_by, current_user.id %>
+		<%= text_field_tag :name, '', {'placeholder'=>'追加したいタグ', 'data-theme'=>'e'} %>
+		<%= text_field_tag :image_url, '', {'placeholder'=>'URL', 'style'=>'display:none;'}%>
+		<%= hidden_field_tag :scope_id, @scope.id %>
+		<%= submit_tag '追加', {'data-theme'=>'e'} %>
+	<% end %>
+	
+	<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:success=>true, :scope_id=>@scope.id) %>
 	<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
 	<div id="CommitHere" style="display:block;">
-		<div class="" style="">
-			<% form_tag create_all_progre_path, {:method=>:post, 'style'=>'width:85%; display:inline-block;'} do %>
-			<%= submit_tag 'やったよ', {'data-icon'=>''} %>
+		<% form_tag create_all_progre_path, {:method=>:post} do %>
+		<%= submit_tag 'やったよ', {'data-icon'=>''} %>
 
-				<% @hack_tags.each do |hack_tag| %>
-					<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
-				<% end %>
-				
-				<% @hack_tags_singled.each do |hts| %>
-					<% if hts.singled_by == current_user.id %>
-						<%= hidden_field_tag "hack_tag_singled_ids[]", hts.id %>
-					<% end %>
-				<% end %>
-
-				<%= hidden_field_tag :scope_id, @scope.id %>
-				<% if user_signed_in? %>
-					<%= hidden_field_tag :user_id, current_user.id %>
+			<% @hack_tags.each do |hack_tag| %>
+				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+			<% end %>
+			
+			<% @hack_tags_singled.each do |hts| %>
+				<% if hts.singled_by == current_user.id %>
+					<%= hidden_field_tag "hack_tag_singled_ids[]", hts.id %>
 				<% end %>
 			<% end %>
-			<button id="StandOut" data-inline="true" data-icon="star" data-iconpos="notext">こんな風にやってるよ</button>
-		</div>
-		<div id="StandOutForm" class="" style="">
-			<% form_tag create_hack_tag_and_hacks_scope_hack_tags_path, :method=>:post do %>
-				<%= hidden_field_tag :singled_by, current_user.id %>
-				<%= text_field_tag :name, '', {'placeholder'=>'ノウハウや成果'} %>
-				<%= text_field_tag :image_url, '', {'placeholder'=>'URL', 'style'=>'display:none;'}%>
-				
-				<%= hidden_field_tag :scope_id, @scope.id %>
-				
-				<%= submit_tag 'こんな風にやってるよ' %>
-			<% end %>
-		</div>
+
+			<%= hidden_field_tag :scope_id, @scope.id %>
+			<%= hidden_field_tag :user_id, current_user.id %>
+		<% end %>
 	</div>
+	<% end %>
 	<% end %>
 	
 	<% if user_signed_in? && current_user.users_scopes.where(:scope_id=>@scope.id).blank? && flash[:from_your_set]=='true' %>
 		<% form_for current_user.users_scopes.where(:scope_id=>flash[:current_set_id].to_i).last do |f| %>
 			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
 			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
+			<% @hack_tags.each do |hack_tag| %>
+				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+			<% end %>
 			<%= f.submit '挑戦中のセットを上書きする' %>
 		<% end %>
 		<% form_for @users_scope do |f| %>
 			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
 			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
+			<% @hack_tags.each do |hack_tag| %>
+				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+			<% end %>
 			<%= f.submit '新しくこのセットにも挑戦する' %>
 		<% end %>
 	<% elsif user_signed_in? && current_user.users_scopes.where(:scope_id=>@scope.id).blank? %>
 		<% form_for @users_scope do |f| %>
 			<%= f.hidden_field :user_id, {'value'=>current_user.id} %>
 			<%= f.hidden_field :scope_id, {'value'=>@scope.id} %>
-			<%= f.submit 'この組み合わせで頑張る' %>
+			<% @hack_tags.each do |hack_tag| %>
+				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+			<% end %>
+			<% if flash[:temp] == 'true' %>
+				<%= hidden_field_tag :temp, true %>
+			<% end %>
+			<%= f.submit 'ここで頑張る' %>
 		<% end %>
 	<% elsif !user_signed_in? %>
 		<%= link_to '新規登録して参加', new_user_registration_path, {'data-role'=>'button'} %>
 	<% end %>
 
 	<div id="UsersInThisScope">
-		<% if @hack_tags.blank? %>
-			<% User.all.each do |user| %>
-				<%= user.screen_name %>
-				<%= user.email %>
-				<% if user.progres.present? %>
-					<%= user.progres.last.success %>
-				<% else %>
-					初参加
-				<% end %>
+		<div style="margin-top:10px;">
+			<% if Progre.where('DATE(done_when)=?', Date.today).exists?(:success=>true, :scope_id=>@scope.id) %>
+			<div style="display:inline-block;" data-theme="e">
+				<h4 style="margin:0 -15px 0 0; padding:10px;">
+					ここでは今日やってるよ！<br>「まだ」の人をクリックすると、応援とかができるよ！
+				</h4>
+			</div>
 			<% end %>
-		<% else %>
-		<h3>参加メンバー</h3>
+			<h3 style="display:block;">参加メンバー</h3>
+		</div>
 			<% @users.each do |user| %>
 			<li style="display:inline-block; padding:3px 10px;">
 				<% if user.screen_name.present? %>
@@ -139,25 +148,29 @@
 				<span class="user_id" style="display:none;"><%= user.id %></span>
 				<br>
 				<% link_to('#ActionToUser', "data-rel"=>"dialog", "data-transition"=>"pop", "style"=>"text-decoration:none;") do %>
-				<% if user.image_url.present? %>
-					<%= image_tag user.image_url, :size=>'40x40' %>
-				<% else %>
-					<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
-				<% end %>
-				<% if user.progres.last.success == true %>
-					<%= image_tag 'button_done.png', :size=>'72x40' %>
-				<% else %>
-					<%= image_tag 'button_undone.png', :size=>'72x40' %>
-				<% end %>
+					<% if user.image_url.present? %>
+						<%= image_tag user.image_url, :size=>'40x40' %>
+					<% else %>
+						<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
+					<% end %>
+					
+					<% if @five_am_issue.fetch(user.id) == true %>
+						<%= image_tag 'button_done.png', :size=>'72x40' %>
+					<% else %>
+						<%= image_tag 'button_undone.png', :size=>'72x40' %>
+					<% end %>
+				
 				<% end %>
 				<br>
 				<span style="color:gray; font-size:11px; float:right;">
-					<%= time_ago_in_words(user.progres.last.done_when) %> ago
+					<% if user.progres.exists?(:success=>true) %>
+						<%= time_ago_in_words(user.progres.where(:success=>true).last.done_when) %> ago
+					<% else %>
+						やってないよ
+					<% end %>
 				</span>
 			</li>
 			<% end %>
-		<% end %>
-	
 	</div>
 
 <!--
@@ -179,7 +192,7 @@
 		<%= link_to 'DestroyThisScope', @scope, :confirm => 'Are you sure?', :method => :delete %>
 	<% end %>
 </div>
-<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
+	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 	<div data-role="navbar">
 		<ul class="ui-grid-a">
 			<li class="ui-block-a">	<%= link_to 'Scope', '#Scope'%></li>
@@ -191,7 +204,7 @@
 
 <div data-role="page" id="History">
 	<div data-role="header" id="Header">
-		<h1>History</h1>
+		<h1><% @hack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 		<% if user_signed_in? %>
 			<%= link_to "Sign Out", destroy_user_session_path %>
 		<% else %>
@@ -200,6 +213,25 @@
 		<%= link_to "home", scopes_path %>
 	</div>
 	<div data-role="content">
+		<ul data-role="listview" style="margin-bottom:15px;">
+			<li data-role="fieldcontain">
+				<% form_for @progre do |f| %>
+					<%= hidden_field_tag :create_all, 'true' %>
+					
+					<% @hack_tags.each do |hack_tag| %>
+						<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+					<% end %>
+					<%= text_field_tag :this_comment, '', {'placeholder'=>'ノウハウや成果'} %>
+					<%= hidden_field_tag :this_user_id, current_user.id %>
+					<%= hidden_field_tag :this_scope_id, @scope.id %>
+
+					<%= f.submit 'こんな風にやってるよ' %>
+				<% end %>
+				<span data-role="button" id="TellUsYourKnowhow">
+					あなたのやり方教えてください。
+				</span>
+			</li>
+		</ul>
 		<ul data-role="listview" style="" data-filter="true">
 			<% @progres_dates.each do |date| %>
 				<li data-role="list-divider" style="height: 10px;">
@@ -219,6 +251,10 @@
 							<%= progre.done_when.hour %>時ごろ
 						</h4>
 						
+						<p style="display:inline;">
+							<%= progre.hack_tag.name %>
+						</p>
+						
 						<span style="float:right;">
 						<% if progre.user.present? %>
 							<% if progre.user.screen_name.present? %>
@@ -233,21 +269,9 @@
 							<% end %>
 						<% end %>
 						</span>
-						
-						<% if progre.hack_tag.present? && progre.hack_tag.singled_by.present? && progre.hack_tag.singled_by > 0 %>
-						</li>
-						<li style="min-height:30px;">
-							<% form_tag create_hack_tag_and_hacks_scope_hack_tags_path, {:method=>:post, 'style'=>'float:right;'} do %>
-								<%= hidden_field_tag :singled_by, current_user.id %>
-								<%= hidden_field_tag :name, progre.hack_tag.name, {'placeholder'=>'ノウハウや成果'} %>
-								<%= hidden_field_tag :image_url, '', {'placeholder'=>'URL', 'style'=>'display:none;'}%>
-
-								<%= hidden_field_tag :scope_id, @scope.id %>
-
-								<%= submit_tag '私も！', {:class=>'MeToo', 'data-icon'=>'check', 'data-iconpos'=>'notext'} %>
-							<% end %>
-							<div style="display:inline-block; margin-top:-10px; width:80%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
-							<span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.hack_tag.name %></span>
+						<% if progre.comment.present? %>
+							<div style="display:inline-block; margin-top:-10px; width:60%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
+							<span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span>
 							</div>
 						<% end %>
 					</li>

@@ -5,7 +5,7 @@ $(document).bind("mobileinit", function(){
 $.mobile.ajaxEnabled = false; // ajaxを無効 
 });
 
-$(function(){
+$(function(){  
 	$('#UsersInThisScope a').click(function(){
 		var hoge = $(this).siblings('.user_id').text();
 		//$('#Cheering').html(hoge);
@@ -13,27 +13,27 @@ $(function(){
 		$('#SeeProfile').html('<a href="/users/'+hoge+'/">この人のプロフィールを見る</a>')
 	});
 	
-	$('#Footer').click(function(){
-		$('#History input.MeToo').siblings().css('top', '-18px');
-	});
-	
-	$('#DefiningScope form').css('display', 'none');
-	$('#StandOutForm').css('display', 'none');
-	
-	$('#StandOut').click(function(){
-		$('#StandOutForm').toggle();
-	});
+	$('#DefiningScope form').hide();
 	$('#Departure').click(function(){
-		$(this).parent().css('display', 'none');
-		$('#DefiningScope form').css({
-			'display': 'inline-block',
-		});
+		$('#DefiningScope form').toggle();
 		$('#Header h1').toggle();
 	});
 	
 	$('#AddHackTag').change(function(){
-		$(this).parents('form#AddingHackTag').submit();
+	  if($(this).children('option:selected').text() == '新規作成'){
+	    $('#WantingNewTag').show();
+	  }else{
+		  $(this).parents('form#AddingHackTag').submit();
+	  }
 	});
 	
-	$('#MeToo').siblings().css('top', '-18px');
+	$('#History #new_progre').hide();
+	$('#History #TellUsYourKnowhow').click(function(){
+  	$('#History #new_progre').show("slow");
+  	$('#History #TellUsYourKnowhow').hide();
+	});
+	
+	$('form.GoWatchThereForm').find('span.ui-btn-text').live('click', function(){
+	  $(this).parents('form.GoWatchThereForm').submit();
+	});
 });
