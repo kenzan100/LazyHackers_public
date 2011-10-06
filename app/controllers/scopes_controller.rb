@@ -187,7 +187,7 @@ class ScopesController < ApplicationController
       	@five_am_issue[user.id] = tf
       	
       	#自分の場合は、scope_idでtf判定
-      	if user.id == current_user.id
+      	if user_signed_in? && user.id == current_user.id
 				  @current_user_tf = Progre.where('DATE(done_when)=?', Date.yesterday).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) || Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
 			  end
   		else
