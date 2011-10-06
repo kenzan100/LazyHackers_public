@@ -5,9 +5,9 @@
 		<%= link_to "ログアウト", destroy_user_session_path %>
 	<% else %>
 		<h1>LazyHackers</h1>
-		<%= link_to "Sign up here", new_user_registration_path %>
+		<%= link_to "新規登録", new_user_registration_path %>
 	<% end %>
-	<%= link_to "HOME", scopes_path %>
+	<%= link_to "ホーム", scopes_path %>
 </div>
 	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 		<%= notice %><%= alert %>
@@ -22,7 +22,7 @@
 
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
-		<li data-role="list-divider">ただ今 挑戦中</li>
+		<li data-role="list-divider">ただ今 参加中</li>
 
 		<% @my_scopes.each do |my_scope, tf| %>
 		<li>
@@ -72,18 +72,12 @@
 		</li>
 	<% end %>
 	</ul>
-	
-<!--
-	<li data-role="list-divider">この中に、あなたが既に習慣化できていることはありませんか？</li>
-	<li data-role="list-divider">現在、こんな習慣化に挑戦する貴方を応援する準備ができています。</li>
--->
-
 </div>
 	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 	<div data-role="navbar">
 		<ul class="ui-grid-a">
-			<li class="ui-block-a">	<%= link_to 'YourScope', '#YourScope'%></li>
-			<li class="ui-block-b">	<%= link_to 'Feed', '#Feed'%></li>
+			<li class="ui-block-a">	<%= link_to 'ホーム', '#YourScope'%></li>
+			<li class="ui-block-b">	<%= link_to 'タイムライン', '#Feed'%></li>
 		</ul>
 	</div>
 </div>
@@ -181,8 +175,8 @@
 	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 		<div data-role="navbar">
 			<ul class="ui-grid-a">
-				<li class="ui-block-a">	<%= link_to 'YourScope', '#YourScope'%></li>
-				<li class="ui-block-b">	<%= link_to 'Feed', '#Feed'%></li>
+				<li class="ui-block-a">	<%= link_to 'ホーム', '#YourScope'%></li>
+				<li class="ui-block-b">	<%= link_to 'タイムライン', '#Feed'%></li>
 			</ul>
 		</div>
 	</div>

@@ -9,11 +9,18 @@ class NotificationMailer < ActionMailer::Base
   #
   #   en.notification_mailer.sendmail_cheer.subject
   #
-  def sendmail_cheer(user, current_user, hack_tags)
-    @user = user
+  def sendmail_cheer(user_email, current_user, hack_tags)
     @current_user = current_user
     @hack_tags = hack_tags
 
-    mail(:to => @user, :subject=>'がんばれ！')
+    mail(:to => user_email, :subject=>'がんばれ！')
+  end
+  
+  def sendmail_congrats(user_email, hack_tags, scope, current_user)
+    @hack_tags = hack_tags
+    @scope = scope
+    @current_user = current_user
+    
+    mail(:to => user_email, :subject=>'おめでとう！')
   end
 end

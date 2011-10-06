@@ -138,8 +138,10 @@ class ScopesController < ApplicationController
       end
     end
     
-    create_select_option_for_creation = HackTag.where(:name=>'新規作成').first
-    @next_hack_tags.push(create_select_option_for_creation)
+    if user_signed_in?
+      create_select_option_for_creation = HackTag.where(:name=>'新規作成').first
+      @next_hack_tags.push(create_select_option_for_creation)
+    end
     
     users_followers = HackTag.check_intersection(@hack_tags)
     @users = users_followers[0]
@@ -175,7 +177,7 @@ class ScopesController < ApplicationController
 			  end
   		else
   			@five_am_issue.store(user.id, user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true))
-      	if user.id == current_user.id
+      	if user_signed_in? && user.id == current_user.id
 				  @current_user_tf = Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
     	  end
   		end

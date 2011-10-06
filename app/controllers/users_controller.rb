@@ -13,11 +13,10 @@ class UsersController < ApplicationController
   def show
     user = User.find(params[:id])
     @user_id = user.id
-    @username = user.screen_name
-    @cheering = 0
-    @cheered = 0
-    @do = 0
-    @party_king = []
+    @screen_name = user.screen_name
+    
+    @his_scopes = user.scopes
+    
     respond_to do |format|
       format.html
     end

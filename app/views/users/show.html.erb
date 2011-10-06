@@ -1,17 +1,34 @@
 <div data-role="header" id="Header">
-	<%= link_to "Back", :back %>
-	<h1><%= @username %>さんはこんな感じ</h1>
+	<%= link_to "戻る", :back %>
+	<h1><%= @screen_name %>さんはこんな感じ</h1>
 </div>
 
 <div data-role="content">
-	<h2>実行回数</h2>
-	<h2>応援回数</h2>
+	<h2>実行回数:<%= Progre.where(:user_id=>@user_id, :success=>true).group(:scope_id).each.count %></h2>
 	
+	<h3>この人が参加しているスコープ</h3>
+	<ol>
+		<% @his_scopes.each do |his_scope| %>
+		<li>
+			<% link_to(his_scope) do %>
+				<% unless his_scope.hack_tags.count == 1 %>
+					<% his_scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false).each do |hack_tag|%>
+						<%= hack_tag.name %>
+					<% end %>
+				<% else %>
+					<%= his_scope.hack_tags.first.name %>
+				<% end %>
+			<% end %>
+		</li>
+		<% end %>
+	</ol>
+	
+<!--
 	<ul>
 		<li>指導者</li>
 		<li>先導者</li>
 		<li>世話焼き</li>
 		<li>Lazy</li>
 	</ul>
-	
+-->
 </div>

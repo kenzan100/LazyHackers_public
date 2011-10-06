@@ -45,17 +45,22 @@ class ProgresController < ApplicationController
 
     @scope = Scope.find(params[:scope_id])
     
-    done_count = @scope.progres.where('DATE(done_when)=? AND success = ?', Date.today, true).count
+    done_count = @scope.progres.where('DATE(done_when)=? AND scope_id = ? AND success = ?', Date.today, @scope.id, true).group(:user_id).each.count
     users = Progre.where('scope_id=? AND success = ?', @scope.id, true).group(:user_id)
     users_count = users.each.count
     
-    if done_count == user_count
+    if users_count > 1 && done_count == users_count && Time.now.hour > 9
       users.each do |users_progre|
-        @mail = NoticeMailer.sendmail_congrats(User.find(users_progre.user_id.email, @scope.title, @party.id).deliver
+        @mail = NotificationMailer.sendmail_congrats(User.find(users_progre.user_id).email, @scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false), @scope, current_user).deliver
       end
+      flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　お祝いメールが送られます。'
+    elsif done_count == users_count
+      flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　深夜なので、こっそりここで貴方にだけ伝えます。'
+    else
+      flash[:notice] = 'おつかれさまです！他の人を応援してみては？'
     end
     
-    redirect_to @scope, :notice=>'おつかれさまです！他の人を応援してみては？'
+    redirect_to @scope
   end
   
   # POST /progres

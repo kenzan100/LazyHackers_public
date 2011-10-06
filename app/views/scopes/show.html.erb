@@ -5,18 +5,17 @@
 		Editing..
 	</h1>
 	<% if user_signed_in? %>
-		<%= link_to "Back", :back %>
+		<%= link_to "戻る", :back %>
 	<% else %>
-		<%= link_to "Sign In", new_user_session_path %>
+		<%= link_to "ログイン", new_user_session_path %>
 	<% end %>
-	<%= link_to "home", scopes_path %>
-</div>
+	<%= link_to "ホーム", scopes_path %>
+	</div>
 	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 	<%= notice %><%= alert %>
-	<%= flash[:temp] %>
-	<%= flash[:oraora] %>
 	</p>
 	<div data-role="content">
+		
 	<div id="DefiningScope">
 		<% if @hack_tags.blank? %>
 			<h3>All LazyHackers</h3>
@@ -155,7 +154,7 @@
 						<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
 					<% end %>
 					
-					<% if user.id == current_user.id %>
+					<% if user_signed_in? && user.id == current_user.id %>
 						<% if @current_user_tf %><%= image_tag 'button_done.png', :size=>'72x40' %>
 						<% else %><%= image_tag 'button_undone.png', :size=>'72x40' %>
 						<% end %>
@@ -183,12 +182,13 @@
 	<% if user_signed_in? && current_user.id ==1 %>
 		<%= link_to 'DestroyThisScope', @scope, :confirm => 'Are you sure?', :method => :delete %>
 	<% end %>
-</div>
+	</div>
+
 	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 	<div data-role="navbar">
 		<ul class="ui-grid-a">
-			<li class="ui-block-a">	<%= link_to 'Scope', '#Scope'%></li>
-			<li class="ui-block-b">	<%= link_to 'History', '#History'%></li>
+			<li class="ui-block-a">	<%= link_to 'スコープ', '#Scope'%></li>
+			<li class="ui-block-b">	<%= link_to 'ヒストリー', '#History'%></li>
 		</ul>
 	</div>
 </div>
@@ -198,11 +198,11 @@
 	<div data-role="header" id="Header">
 		<h1><% @hack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 		<% if user_signed_in? %>
-			<%= link_to "Back", :back %>
+			<%= link_to "戻る", :back %>
 		<% else %>
-			<%= link_to "Sign up here", new_user_registration_path %>
+			<%= link_to "新規登録", new_user_registration_path %>
 		<% end %>
-		<%= link_to "home", scopes_path %>
+		<%= link_to "ホーム", scopes_path %>
 	</div>
 	<div data-role="content">
 		<% if user_signed_in? %>
@@ -275,8 +275,8 @@
 	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
 		<div data-role="navbar">
 			<ul class="ui-grid-a">
-				<li class="ui-block-a">	<%= link_to 'Scope', '#Scope'%></li>
-				<li class="ui-block-b">	<%= link_to 'History', '#History'%></li>
+				<li class="ui-block-a">	<%= link_to 'スコープ', '#Scope'%></li>
+				<li class="ui-block-b">	<%= link_to 'ヒストリー', '#History'%></li>
 			</ul>
 		</div>
 	</div>
