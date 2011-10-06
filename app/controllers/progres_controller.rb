@@ -49,6 +49,8 @@ class ProgresController < ApplicationController
     users = Progre.where('scope_id=? AND success = ?', @scope.id, true).group(:user_id)
     users_count = users.each.count
     
+    UsersHacktag.update_from_progres(Progre.where('scope_id=? AND success = ?', @scope.id, true))
+    
     if users_count > 1 && done_count == users_count && Time.now.hour > 9
       users.each do |users_progre|
         @mail = NotificationMailer.sendmail_congrats(User.find(users_progre.user_id).email, @scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false), @scope, current_user).deliver

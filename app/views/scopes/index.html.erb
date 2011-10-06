@@ -16,6 +16,7 @@
 	<div data-role="content">
 	
 	<%# HackTag.check_exit(HackTag.all) %>
+	<% Scope.insert_image_from_hack_tag(Scope.all) %>
 	<%# UsersHacktag.update_from_progres(Progre.all) %>
 	<%# Progre.check_dropout(User.all, HackTag.all) %>
 	<%# Progre.from_party_id_to_scope_id %>
