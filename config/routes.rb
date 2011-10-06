@@ -1,4 +1,6 @@
 Lazyhackers4::Application.routes.draw do
+  resources :parties_scopes
+
   resources :users_hacktags
 
   resources :parties_hacktags

@@ -7,15 +7,7 @@ class HackTag < ActiveRecord::Base
   has_many :users, :through => :users_hacktags
   
   has_many :hack_tag_follows
-  
-  def self.clean_up_singled_by(hack_tags)
-    hack_tags.each do |hack_tag|
-      if hack_tag.singled_by.present?
-        hack_tag.destroy
-      end
-    end
-  end
-  
+    
   def self.check_exit(hack_tags)
     hack_tags.each do |hack_tag|
       dropout = 0

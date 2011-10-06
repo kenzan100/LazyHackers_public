@@ -54,7 +54,7 @@ class ProgresController < ApplicationController
         @mail = NotificationMailer.sendmail_congrats(User.find(users_progre.user_id).email, @scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false), @scope, current_user).deliver
       end
       flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　お祝いメールが送られます。'
-    elsif done_count == users_count
+    elsif users_count > 1 && done_count == users_count
       flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　深夜なので、こっそりここで貴方にだけ伝えます。'
     else
       flash[:notice] = 'おつかれさまです！他の人を応援してみては？'

@@ -35,3 +35,4 @@ gem 'oa-oauth', :require=>'omniauth/oauth'
 
 gem 'jquery-rails'
 gem 'yaml_db'
+gem 'ruby-prof'

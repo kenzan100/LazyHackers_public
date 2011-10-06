@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111005093820) do
+ActiveRecord::Schema.define(:version => 20111006151721) do
 
   create_table "hack_tag_follows", :force => true do |t|
     t.integer  "hack_tag_id"
@@ -43,6 +43,13 @@ ActiveRecord::Schema.define(:version => 20111005093820) do
   create_table "parties_hacktags", :force => true do |t|
     t.integer "party_id"
     t.integer "hack_tag_id"
+  end
+
+  create_table "parties_scopes", :force => true do |t|
+    t.integer  "party_id"
+    t.integer  "scope_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "progres", :force => true do |t|

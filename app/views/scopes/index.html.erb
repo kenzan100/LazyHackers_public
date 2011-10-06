@@ -3,22 +3,24 @@
 	<% if user_signed_in? %>
 		<h1><%= current_user.screen_name %></h1>
 		<%= link_to "ログアウト", destroy_user_session_path %>
+		<%= link_to "設定", edit_user_path(current_user) %>
 	<% else %>
 		<h1>LazyHackers</h1>
 		<%= link_to "新規登録", new_user_registration_path %>
+		<%= link_to "ホーム", scopes_path %>
 	<% end %>
-	<%= link_to "ホーム", scopes_path %>
 </div>
 	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 		<%= notice %><%= alert %>
 	</p>
 	<div data-role="content">
 	
-	<%# HackTag.check_exit(HackTag.where(:id=>151)) %>
-	<%#= Progre.check_dropout(User.where(:id=>1), HackTag.all) %>
+	<%# HackTag.check_exit(HackTag.all) %>
 	<%# UsersHacktag.update_from_progres(Progre.all) %>
-	<%# Progre.from_updated_at_to_done_when %>
+	<%# Progre.check_dropout(User.all, HackTag.all) %>
+	<%# Progre.from_party_id_to_scope_id %>
 	<%# Progre.from_party_id_to_hack_tag_id %>
+	<%# Progre.from_updated_at_to_done_when %>
 
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
@@ -27,7 +29,7 @@
 		<% @my_scopes.each do |my_scope, tf| %>
 		<li>
 		<% link_to(my_scope) do %>
-			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
+			<%#= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
 			<p style="margin-left:20px; margin-top:0; margin-bottom:2px; font-weight:bold;">
 			<% my_scope.hack_tags.each_with_index do |mhack_tag, i| %>
 				<% if i > 0  %>
@@ -85,7 +87,7 @@
 
 <div data-role="page" id="Feed">
 	<div data-role="header" id="Header">
-		<h1>Feed</h1>
+		<h1>タイムライン</h1>
 		<% if user_signed_in? %>
 			<%= link_to "Sign Out", destroy_user_session_path %>
 		<% else %>
@@ -94,7 +96,7 @@
 		<%= link_to "home", scopes_path %>
 	</div>
 	<div data-role="content">
-		<ul data-role="listview" style="" data-filter="true">
+		<ul data-role="listview" data-filter="true"　data-filter-placeholder="ヒストリーを絞り込む">
 			<% if user_signed_in? %>
 			<% @feed_dates.each do |date| %>
 				<li data-role="list-divider" style="height: 10px;">
@@ -123,11 +125,8 @@
 						</span>
 						
 						<% if progre.comment.present? %>
-							<div style="display:block; margin-top:-10px; width:80%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
-							<span style="padding:5px; float:right; margin-right:-15px; background:white;">
-							<%= progre.comment %>
-							</span>
-							</div>
+							<div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;">
+							<%= progre.comment %></span></div>
 						<% end %>
 					<% end %>
 					<% else %>
@@ -154,10 +153,8 @@
 						</span>
 						
 						<% if progre.comment.present? %>
-							<div style="display:block; margin-top:-10px; width:80%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;">
-							<span style="padding:5px; float:right; margin-right:-15px; background:white;">
-							<%= progre.comment %>
-							</span>
+							<div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;">
+							<%= progre.comment %></span>
 							</div>
 						<% end %>
 					<% end %>

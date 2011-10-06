@@ -2,6 +2,21 @@
 
 class ScopesController < ApplicationController
   
+  around_filter :profile_it, :only => :index, :if => lambda{Rails.env.profile?}
+
+    # profiling around-filter - just does the controller-action only
+    def profile_it
+      require 'ruby-prof'
+      ::RubyProf.start
+      yield
+      result = ::RubyProf.stop
+      printer = ::RubyProf::CallTreePrinter.new(result)
+      path = Rails.root.join("tmp/process_time.tree")
+      File.open(path, 'w') do |f|
+        printer.print(f, :min_percent => 0, :print_file => true)
+      end
+    end
+    
   def list
     @scopes = Scope.all
     
@@ -109,7 +124,7 @@ class ScopesController < ApplicationController
   def from_search
     scope = Scope.find(params[:id])
     flash[:from_search] = 'true'
-    redirect_to scope, :notice=>'追加を押すと、より小さな単位になります。'
+    redirect_to scope, :notice=>'ここにはこれだけの人がいます。追加を押して、より細かく設定しましょう。'
   end
 
   # GET /scopes/1

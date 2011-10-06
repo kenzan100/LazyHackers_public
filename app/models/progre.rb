@@ -25,37 +25,34 @@ class Progre < ActiveRecord::Base
   end
   
   def self.check_dropout(users, hack_tags)
-    two_daysago = Date.today - 2.days
+    six_daysago = Date.today - 6.days
     today = Date.today
     hangin_theres = []
     users.each do |user|
       hack_tags.each do |hack_tag|
         hangin_there = 0
-        last_done = user.progres.where(:hack_tag_id=>hack_tag.id).order('done_when DESC').first
+        last_done = user.progres.where(:hack_tag_id=>hack_tag.id, :success=>true).last
+        
         if last_done.present?
-          (two_daysago..today).each do |each_day|
+          (six_daysago..today).each do |each_day|
             if each_day.to_s == last_done.done_when.strftime("%Y-%m-%d")
               hangin_there = 1
             end
-                      
-            if hangin_there == 0
-              dropout_record = last_done.clone
-              dropout_record.dropout = true
-              dropout_record.save
-            else
-              user.progres.where(:hack_tag_id=>hack_tag.id).each do |recover|
-                recover.dropout = false
-                recover.save
-              end
-            end
-            
-            hangin_theres.push(hangin_there)
           end
         end
+                      
+        if hangin_there == 0
+          user.progres.where(:hack_tag_id=>hack_tag.id).update_all(:dropout => true)
+        else
+          user.progres.where(:hack_tag_id=>hack_tag.id).each do |recover|
+            recover.dropout = false
+            recover.save
+          end
+        end
+        
       end
     end
     
-    return hangin_theres
   end
   
   def self.check_intersection(hack_tags)
@@ -94,6 +91,16 @@ class Progre < ActiveRecord::Base
     Progre.all.each do |progre|
       progre.done_when = progre.updated_at
       progre.save
+    end
+  end
+  
+  def self.from_party_id_to_scope_id
+    Progre.all.each do |progre|
+      #プログレのパーティーIDをパーティーズハックタグに照らし合わせて、スコープIDに値を入れる
+      if PartiesScope.exists?(:party_id=>progre.party_id)
+        progre.scope_id = PartiesScope.where(:party_id=>progre.party_id).first.scope_id
+        progre.save
+      end
     end
   end
   

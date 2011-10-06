@@ -1,0 +1,2 @@
+module PartiesScopesHelper
+end

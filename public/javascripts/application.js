@@ -10,7 +10,7 @@ $(function(){
 		var hoge = $(this).siblings('.user_id').text();
 		//$('#Cheering').html(hoge);
 		$('#Cheering #user_id').val(hoge);
-		$('#SeeProfile').html('<a href="/users/'+hoge+'/">この人のプロフィールを見る</a>')
+		$('#SeeProfile').html('<li><a href="/users/'+hoge+'/">この人のプロフィールを見る</a></li>')
 	});
 	
 	$('#DefiningScope form').hide();

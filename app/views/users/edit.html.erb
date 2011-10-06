@@ -1,4 +1,4 @@
-<h1>Editing UserInfo</h1>
+<h1>アカウント情報</h1>
 
 <%= form_for(@user) do |f| %>
   <% if @user.errors.any? %>
@@ -14,7 +14,7 @@
   <% end %>
 
   <div class="field">
-	<%= f.label :screen_name, 'twitterからの人のユーザーネーム' %>
+	<%= f.label :screen_name, 'スクリーンネーム' %>
     <%= f.text_field :screen_name %>
   </div>
   <div class="field">
@@ -22,12 +22,12 @@
     <%= f.text_field :image_url %>
   </div>
   <div class="field">
-	<%= f.label :email %>
-    <%= f.text_field :email %>
+	<%= f.label :email, 'メールアドレス' %>
+    <%= f.text_field :email, {'placeholder'=>'応援メッセージを受け取る宛先です。'} %>
   </div>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit '更新する' %>
   </div>
 <% end %>
 
-<%= link_to 'Home', scopes_path %>
+<%= link_to 'ホームへ戻る', scopes_path %>

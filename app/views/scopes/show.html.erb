@@ -1,6 +1,6 @@
 <div data-role="page" id="Scope">
 	<div data-role="header" id="Header">
-	<h1><%= @shack_tags.first.name %></h1>
+	<h1><% @shack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 	<h1 style="display:none;">
 		Editing..
 	</h1>
@@ -196,7 +196,7 @@
 
 <div data-role="page" id="History">
 	<div data-role="header" id="Header">
-		<h1><% @hack_tags.each do |ht| %><%=ht.name%><%end%></h1>
+		<h1><% @shack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 		<% if user_signed_in? %>
 			<%= link_to "戻る", :back %>
 		<% else %>
@@ -226,7 +226,7 @@
 			</li>
 		</ul>
 		<% end %>
-		<ul data-role="listview" style="" data-filter="true">
+		<ul data-role="listview" style="" data-filter="true" data-filter-placeholder="絞り込み検索">
 			<% @progres_dates.each do |date| %>
 				<li data-role="list-divider" style="height: 10px;">
 					<span style="float:right;"><%= date[0] %></span>
@@ -248,7 +248,7 @@
 								<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
 								<% end %>
 								<% end %></span>
-							<% if progre.comment.present? %><div style="display:inline-block; margin-top:-10px; width:60%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
+							<% if progre.comment.present? %><div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
 						<% end %>
 					<% else %>
 						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
@@ -264,7 +264,7 @@
 							<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
 							<% end %>
 							<% end %></span>
-						<% if progre.comment.present? %><div style="display:inline-block; margin-top:-10px; width:60%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
+						<% if progre.comment.present? %><div style="display:inline-block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
 					<% end %>
 					</li>
 				<% end %>
