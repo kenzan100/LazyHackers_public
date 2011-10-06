@@ -1,9 +1,0 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  hack_tag_id: 1
-  scope_id: 1
-
-two:
-  hack_tag_id: 1
-  scope_id: 1
