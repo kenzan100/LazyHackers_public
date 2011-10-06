@@ -40,24 +40,20 @@ class ProgresController < ApplicationController
   end
 
   def create_all
-    if params[:hack_tag_singled_ids]
-      params[:hack_tag_singled_ids].each do |htsid|
-        progre = Progre.new
-        progre.hack_tag_id = htsid
-        progre.success = true
-        progre.done_when = Time.now
-        progre.scope_id = params[:scope_id]
-        if user_signed_in?
-          progre.user_id = params[:user_id]
-        end
-        progre.save
-      end
-    end
-    
     hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
     Progre.create_all_success(hack_tags, params[:user_id], params[:scope_id])
-    
+
     @scope = Scope.find(params[:scope_id])
+    
+    done_count = @scope.progres.where('DATE(done_when)=? AND success = ?', Date.today, true).count
+    users = Progre.where('scope_id=? AND success = ?', @scope.id, true).group(:user_id)
+    users_count = users.each.count
+    
+    if done_count == user_count
+      users.each do |users_progre|
+        @mail = NoticeMailer.sendmail_congrats(User.find(users_progre.user_id.email, @scope.title, @party.id).deliver
+      end
+    end
     
     redirect_to @scope, :notice=>'おつかれさまです！他の人を応援してみては？'
   end

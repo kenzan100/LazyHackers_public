@@ -25,7 +25,12 @@
 			<%if hack_tag.image_url.present?%><%=image_tag hack_tag.image_url, :size=>'40x40'%><%else%>
 			<span style="display:inline-block; font-size:200%; margin-top:0;"><%= hack_tag.name %></span><%end%>
 			<span style="display:inline-block;">
-			<% form_tag search_scope_from_hack_tags_scope_path, {:id=>'Loosen', :method=>:post, :style=>'display:inline-block; height:35px; margin-left:-10px;'} do %>
+			<% if flash[:from_search]=='true' %>
+				<% fuga = 'display:inline-block!important; height:35px; margin-left:-10px;'%>
+			<% else %>
+				<% fuga = 'display:inline-block; height:35px; margin-left:-10px;'%>
+			<% end %>
+			<% form_tag search_scope_from_hack_tags_scope_path, {:id=>'Loosen', :method=>:post, :style=>fuga} do %>
 				<%= hidden_field_tag :add_flag, false %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
@@ -151,8 +156,8 @@
 					<% end %>
 					
 					<% if user.id == current_user.id %>
-						<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) %><%= image_tag 'button_undone.png', :size=>'72x40' %>
-						<% else %><%= image_tag 'button_done.png', :size=>'72x40' %>
+						<% if @current_user_tf %><%= image_tag 'button_done.png', :size=>'72x40' %>
+						<% else %><%= image_tag 'button_undone.png', :size=>'72x40' %>
 						<% end %>
 					<% else %>
 						<% if @five_am_issue.fetch(user.id) == true %>

@@ -2,12 +2,12 @@
 	<div data-role="header" id="Header">
 	<% if user_signed_in? %>
 		<h1><%= current_user.screen_name %></h1>
-		<%= link_to "Sign Out", destroy_user_session_path %>
+		<%= link_to "ログアウト", destroy_user_session_path %>
 	<% else %>
 		<h1>LazyHackers</h1>
 		<%= link_to "Sign up here", new_user_registration_path %>
 	<% end %>
-	<%= link_to "home", scopes_path %>
+	<%= link_to "HOME", scopes_path %>
 </div>
 	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 		<%= notice %><%= alert %>
@@ -24,7 +24,7 @@
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
 		<li data-role="list-divider">ただ今 挑戦中</li>
 
-		<% current_user.scopes.each do |my_scope| %>
+		<% @my_scopes.each do |my_scope, tf| %>
 		<li>
 		<% link_to(my_scope) do %>
 			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
@@ -39,12 +39,7 @@
 			<% end %>
 			</p>
 			<p class="ui-li-desc" style="margin-left:20px; margin-top:0; margin-bottom:0;">
-			<% my_scope.hack_tags.where(:singled_by=>current_user.id).each do |mhack_tag| %>
-				<%= mhack_tag.name%>
-			<% end %>
-			<% if my_scope.hack_tags.where(:singled_by=>current_user.id).blank? %>
-				　
-			<% end %>
+				<% if tf %>やった<%else%>まだ<% end %>
 			</p>
 		<% end %>
 		<%= link_to 'RemoveFromMyScope', my_scope.users_scopes.where(:user_id=>current_user.id).first, :confirm=>'このセットを消しますか？', :method=>:delete %>

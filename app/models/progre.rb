@@ -1,6 +1,7 @@
 class Progre < ActiveRecord::Base
   belongs_to :hack_tag
   belongs_to :user
+  belongs_to :scope
   
   def self.create_all_success(hack_tags, user_id, scope_id)
     hack_tags.each do |hack_tag|

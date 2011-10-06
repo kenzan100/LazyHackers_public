@@ -20,14 +20,18 @@ class ScopesController < ApplicationController
     else
       searching_hack_tag_condition = from_current_scope.hack_tags - adding_removing_hack_tag
     end
+
   
     Scope.all.each do |scope|
-      if scope.hack_tags == searching_hack_tag_condition
+      if searching_hack_tag_condition.count == 0
+        @scope_to = scopes_path
+        break
+      elsif scope.hack_tags == searching_hack_tag_condition
         @scope_to = scope
         break
       end
     end
-  
+    
     if flash[:from_your_set] == 'true'
       params[:from_your_set] = 'true'
       params[:scope_id] = flash[:current_set_id]
@@ -66,10 +70,19 @@ class ScopesController < ApplicationController
       @friends = []
       @feed = []
       
+      @my_scopes = Hash.new
       current_user.scopes.each do |my_scope|
         users_followers = HackTag.check_intersection(my_scope.hack_tags)
         @friends.push(users_followers[1])
+        
+        if Time.now.hour < 5
+    		  my_tf = my_scope.progres.where('Date(done_when)=? AND user_id=?', Date.yesterday, current_user.id).exists?(:success=>true) || my_scope.progres.where('Date(done_when)=? AND user_id=?', Date.today, current_user.id).exists?(:success=>true)
+    		else
+    		  my_tf = my_scope.progres.where('Date(done_when)=? AND user_id=?', Date.today, current_user.id).exists?(:success=>true)
+    		end
+      	@my_scopes.store(my_scope, my_tf)
       end
+      
       unless @friends.blank?
         @friends.flatten!.uniq!
       end
@@ -150,15 +163,21 @@ class ScopesController < ApplicationController
           @progres.push(u_progre)
         end
       end
-    end
       
-    @users.each do |user|
+		  #やった、まだ、の朝5時を境にした判定
       if Time.now.hour < 5
-  		  #やった、まだ、の朝5時を境にした判定
   		  tf = user.progres.where('Date(done_when)=? AND user_id=?', Date.yesterday, user.id).exists?(:success=>true) || user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true)
       	@five_am_issue[user.id] = tf
+      	
+      	#自分の場合は、scope_idでtf判定
+      	if user.id == current_user.id
+				  @current_user_tf = Progre.where('DATE(done_when)=?', Date.yesterday).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) || Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
+			  end
   		else
   			@five_am_issue.store(user.id, user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true))
+      	if user.id == current_user.id
+				  @current_user_tf = Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
+    	  end
   		end
     end
     @progres = @progres.sort{|a, b| b.done_when<=>a.done_when}

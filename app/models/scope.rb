@@ -5,6 +5,8 @@ class Scope < ActiveRecord::Base
   has_many :users_scopes
   has_many :users, :through => :users_scopes
   
+  has_many :progres
+  
   def self.create_one_more_depth_scope(given_hack_tags)
     creating_scope = Scope.new
     creating_scope.save

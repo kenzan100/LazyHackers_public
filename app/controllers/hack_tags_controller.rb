@@ -55,6 +55,12 @@ class HackTagsController < ApplicationController
 		users_scope = UsersScope.new(:user_id=>current_user.id, :scope_id=>@creating_scope.id)
 		users_scope.save
 		
+		this_hack_tags.each do |hack_tag|
+		  unless UsersHacktag.exists?(:user_id=>current_user.id, :hack_tag_id=>hack_tag.id)
+        users_hacktag = UsersHacktag.new(:user_id=>current_user.id, :hack_tag_id=>hack_tag.id)
+        users_hacktag.save
+	    end
+	  end
     users_hacktag = UsersHacktag.new(:user_id=>current_user.id, :hack_tag_id=>new_hack_tag.id)
     users_hacktag.save
     
