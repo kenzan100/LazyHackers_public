@@ -93,7 +93,7 @@ class ScopesController < ApplicationController
         if Time.now.hour < 5
     		  my_tf = my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day-1.day, current_user.id).exists?(:success=>true) || my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, current_user.id).exists?(:success=>true)
     		else
-    		  my_tf = my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, current_user.id).exists?(:success=>true)
+    		  my_tf = my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day+5.hours, current_user.id).exists?(:success=>true)
     		end
       	@my_scopes.store(my_scope, my_tf)
       end
@@ -192,9 +192,9 @@ class ScopesController < ApplicationController
 				  @current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day-1.day).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) || Progre.where('done_when>=?', Time.now.beginning_of_day).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
 			  end
   		else
-  			@five_am_issue.store(user.id, user.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, user.id).exists?(:success=>true))
+  			@five_am_issue.store(user.id, user.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day+5.hours, user.id).exists?(:success=>true))
       	if user_signed_in? && user.id == current_user.id
-				  @current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
+				  @current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day+5.hours).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
     	  end
   		end
     end
