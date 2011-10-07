@@ -16,7 +16,7 @@
 	<div data-role="content">
 	
 	<%# HackTag.check_exit(HackTag.all) %>
-	<% Scope.insert_image_from_hack_tag(Scope.all) %>
+	<%# Scope.insert_image_from_hack_tag(Scope.all) %>
 	<%# UsersHacktag.update_from_progres(Progre.all) %>
 	<%# Progre.check_dropout(User.all, HackTag.all) %>
 	<%# Progre.from_party_id_to_scope_id %>
@@ -24,13 +24,17 @@
 	<%# Progre.from_updated_at_to_done_when %>
 
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
+	<% if user_signed_in? && current_user.id == 1 %>
+		<%= User.find(10).progres.where('Date(done_when)=? AND user_id=?', Date.today, 10).exists?(:success=>true) %>
+	<% end %>
+
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
 		<li data-role="list-divider">ただ今 参加中</li>
 
 		<% @my_scopes.each do |my_scope, tf| %>
 		<li>
 		<% link_to(my_scope) do %>
-			<%#= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
+			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
 			<p style="margin-left:20px; margin-top:0; margin-bottom:2px; font-weight:bold;">
 			<% my_scope.hack_tags.each_with_index do |mhack_tag, i| %>
 				<% if i > 0  %>
