@@ -17,6 +17,7 @@
 	<div data-role="content">
 		
 	<div id="DefiningScope">
+		
 		<% if @hack_tags.blank? %>
 			<h3>All LazyHackers</h3>
 		<% end %>
@@ -151,7 +152,7 @@
 					<% if user.image_url.present? %>
 						<%= image_tag user.image_url, :size=>'40x40' %>
 					<% else %>
-						<%= image_tag 'DummyImageUrl.png', :size=>'40x40' %>
+						<%= image_tag 'DummyImageURL.png', :size=>'40x40' %>
 					<% end %>
 					
 					<% if user_signed_in? && user.id == current_user.id %>
