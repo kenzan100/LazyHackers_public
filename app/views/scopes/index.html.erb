@@ -21,12 +21,8 @@
 	<%# Progre.check_dropout(User.all, HackTag.all) %>
 	<%# Progre.from_party_id_to_scope_id %>
 	<%# Progre.from_party_id_to_hack_tag_id %>
-	<%# Progre.from_updated_at_to_done_when %>
 
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
-	<% if user_signed_in? && current_user.id == 1 %>
-		<%= User.find(10).progres.where('Date(done_when)=? AND user_id=?', Date.today, 10).exists?(:success=>true) %>
-	<% end %>
 
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
 		<li data-role="list-divider">ただ今 参加中</li>
@@ -124,7 +120,7 @@
 							<% else %><%= truncate progre.user.email, :length=>12 %>
 							<% end %>
 							<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
-							<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
+							<% else %><%= image_tag 'DummyImageURL.png', {:size=>'25x25'} %>
 							<% end %>
 						<% end %>
 						</span>
@@ -152,7 +148,7 @@
 							<% if progre.user.image_url.present? %>
 								<%= image_tag progre.user.image_url, {:size=>'25x25'} %>
 							<% else %>
-								<%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
+								<%= image_tag 'DummyImageURL.png', {:size=>'25x25'} %>
 							<% end %>
 						<% end %>
 						</span>
