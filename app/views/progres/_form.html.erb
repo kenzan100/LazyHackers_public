@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= f.label :success %><br />
-    <%= f.check_box :success %>
+    <%= f.check_box :success, {'data-role'=>'none'} %>
   </div>
   <div class="field">
     <%= f.label :hack_tag_id %><br />
@@ -26,6 +26,10 @@
   <div class="field">
     <%= f.label :done_when %><br />
     <%= f.datetime_select :done_when %>
+  </div>
+  <div>
+  	<%= f.label :comment %>
+	<%= f.text_field :comment %>
   </div>
   <div class="actions">
     <%= f.submit %>

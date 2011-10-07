@@ -7,9 +7,11 @@
     <th>Hack tag</th>
     <th>User</th>
     <th>Done when</th>
+    <th>Cheered_by</th>
+    <th>Comment?</th>
     <th></th>
-    <th></th>
-    <th></th>
+	<th></th>
+	<th></th>
   </tr>
 
 <% @progres.each do |progre| %>
@@ -20,6 +22,8 @@
     <td><%= progre.user_id %></td>
     <td><%= progre.done_when %></td>
 	<td><%= progre.dropout%><% if progre.dropout == true %>DROPED OUT FOR NOW<% end %></td>
+	<td><%= progre.cheered_by %></td>
+	<td><%= progre.comment.present? %></td>
     <td><%= link_to 'Show', progre %></td>
     <td><%= link_to 'Edit', edit_progre_path(progre) %></td>
     <td><%= link_to 'Destroy', progre, :confirm => 'Are you sure?', :method => :delete %></td>
