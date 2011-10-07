@@ -91,9 +91,9 @@ class ScopesController < ApplicationController
         @friends.push(users_followers[1])
         
         if Time.now.hour < 5
-    		  my_tf = my_scope.progres.where('Date(done_when)=? AND user_id=?', Date.yesterday, current_user.id).exists?(:success=>true) || my_scope.progres.where('Date(done_when)=? AND user_id=?', Date.today, current_user.id).exists?(:success=>true)
+    		  my_tf = my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day-1.day, current_user.id).exists?(:success=>true) || my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, current_user.id).exists?(:success=>true)
     		else
-    		  my_tf = my_scope.progres.where('Date(done_when)=? AND user_id=?', Date.today, current_user.id).exists?(:success=>true)
+    		  my_tf = my_scope.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, current_user.id).exists?(:success=>true)
     		end
       	@my_scopes.store(my_scope, my_tf)
       end
@@ -130,6 +130,7 @@ class ScopesController < ApplicationController
   # GET /scopes/1
   # GET /scopes/1.xml
   def show
+    
     if flash[:from_your_set] == 'true'
       flash.keep(:from_your_set)
       flash.keep(:current_set_id)
@@ -183,17 +184,17 @@ class ScopesController < ApplicationController
       
 		  #やった、まだ、の朝5時を境にした判定
       if Time.now.hour < 5
-  		  tf = user.progres.where('Date(done_when)=? AND user_id=?', Date.yesterday, user.id).exists?(:success=>true) || user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true)
+  		  tf = user.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day-1.day, user.id).exists?(:success=>true) || user.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, user.id).exists?(:success=>true)
       	@five_am_issue[user.id] = tf
       	
       	#自分の場合は、scope_idでtf判定
       	if user_signed_in? && user.id == current_user.id
-				  @current_user_tf = Progre.where('DATE(done_when)=?', Date.yesterday).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) || Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
+				  @current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day-1.day).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) || Progre.where('done_when>=?', Time.now.beginning_of_day).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
 			  end
   		else
-  			@five_am_issue.store(user.id, user.progres.where('Date(done_when)=? AND user_id=?', Date.today, user.id).exists?(:success=>true))
+  			@five_am_issue.store(user.id, user.progres.where('done_when>=? AND user_id=?', Time.now.beginning_of_day, user.id).exists?(:success=>true))
       	if user_signed_in? && user.id == current_user.id
-				  @current_user_tf = Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
+				  @current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
     	  end
   		end
     end
