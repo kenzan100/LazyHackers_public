@@ -1,11 +1,10 @@
-<div data-role="page" id="Scope">
+<div data-role="page" id="Scope" data-add-back-btn="true">
 	<div data-role="header" id="Header">
 	<h1><% @shack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 	<h1 style="display:none;">
 		Editing..
 	</h1>
 	<% if user_signed_in? %>
-		<%= link_to "戻る", :back %>
 	<% else %>
 		<%= link_to "ログイン", new_user_session_path %>
 	<% end %>
@@ -30,7 +29,7 @@
 			<% else %>
 				<% fuga = 'display:inline-block; height:35px; margin-left:-10px;'%>
 			<% end %>
-			<% form_tag search_scope_from_hack_tags_scope_path, {:id=>'Loosen', :method=>:post, :style=>fuga} do %>
+			<% form_tag search_scope_from_hack_tags_scope_path, {:id=>'Loosen', :method=>:post, :style=>fuga, 'data-ajax'=>'false'} do %>
 				<%= hidden_field_tag :add_flag, false %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<%= hidden_field_tag :hack_tag_id, hack_tag.id %>
@@ -49,7 +48,7 @@
 		<% else %>
 			<% hoge = 'display:inline-block;'%>
 		<% end %>
-		<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post, :id=>'AddingHackTag', :style=>hoge} do %>
+		<% form_tag search_scope_from_hack_tags_scope_path, {:method=>:post, :id=>'AddingHackTag', :style=>hoge, 'data-ajax'=>'false'} do %>
 				<%= hidden_field_tag :add_flag, true %>
 				<%= hidden_field_tag :scope_id, @scope.id %>
 				<% if user_signed_in? && current_user.scopes.exists?(:id=>@scope.id) %>
@@ -86,6 +85,10 @@
 
 			<% @hack_tags.each do |hack_tag| %>
 				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
+			<% end %>
+			
+			<% @users.each do |user| %>
+				<%= hidden_field_tag "user_ids[]", user.id %>
 			<% end %>
 			
 			<%= hidden_field_tag :scope_id, @scope.id %>
@@ -130,7 +133,7 @@
 
 	<div id="UsersInThisScope">
 		<div style="margin-top:10px;">
-			<% if Progre.where('DATE(done_when)=?', Date.today).exists?(:success=>true, :scope_id=>@scope.id) %>
+			<% if user_signed_in? && Progre.where('DATE(done_when)=?', Date.today).exists?(:success=>true, :scope_id=>@scope.id, :user_id=>current_user.id) %>
 			<div style="display:inline-block;" data-theme="e">
 				<h4 style="margin:0 -15px 0 0; padding:10px;">
 					ここでは今日やってるよ！<br>「まだ」の人をクリックすると、応援とかができるよ！
@@ -155,17 +158,17 @@
 						<%= image_tag 'DummyImageURL.png', :size=>'40x40' %>
 					<% end %>
 					
-					<% if user_signed_in? && user.id == current_user.id %>
-						<% if @current_user_tf %><%= image_tag 'button_done.png', :size=>'72x40' %>
-						<% else %><%= image_tag 'button_undone.png', :size=>'72x40' %>
-						<% end %>
-					<% else %>
+					<%# if user_signed_in? && user.id == current_user.id %>
+						<%# if @current_user_tf %><%#= image_tag 'button_done.png', :size=>'72x40' %>
+						<%# else %><%#= image_tag 'button_undone.png', :size=>'72x40' %>
+						<%# end %>
+					<%# else %>
 						<% if @five_am_issue.fetch(user.id) == true %>
 							<%= image_tag 'button_done.png', :size=>'72x40' %>
 						<% else %>
 							<%= image_tag 'button_undone.png', :size=>'72x40' %>
 						<% end %>
-					<% end %>
+					<%# end %>
 				
 				<% end %>
 				<br>
@@ -195,11 +198,10 @@
 </div>
 </div>
 
-<div data-role="page" id="History">
+<div data-role="page" id="History" data-add-back-btn="true">
 	<div data-role="header" id="Header">
 		<h1><% @shack_tags.each do |ht| %><%=ht.name%><%end%></h1>
 		<% if user_signed_in? %>
-			<%= link_to "戻る", :back %>
 		<% else %>
 			<%= link_to "新規登録", new_user_registration_path %>
 		<% end %>
@@ -209,17 +211,17 @@
 		<% if user_signed_in? %>
 		<ul data-role="listview" style="margin-bottom:15px;">
 			<li data-role="fieldcontain">
-				<% form_for @progre do |f| %>
-					<%= hidden_field_tag :create_all, 'true' %>
-					
+				<% form_tag add_comment_progre_path, {:method=>:post, :id=>'add_comment'} do %>
+
 					<% @hack_tags.each do |hack_tag| %>
 						<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
 					<% end %>
-					<%= text_field_tag :this_comment, '', {'placeholder'=>'ノウハウや成果'} %>
-					<%= hidden_field_tag :this_user_id, current_user.id %>
-					<%= hidden_field_tag :this_scope_id, @scope.id %>
 
-					<%= f.submit 'こんな風にやってるよ' %>
+					<%= text_field_tag :comment, '', {'placeholder'=>'ノウハウや成果'} %>
+					<%= hidden_field_tag :scope_id, @scope.id %>
+					<%= hidden_field_tag :current_user_id, current_user.id %>
+					
+					<%= submit_tag 'こんな風にやってるよ', {'data-icon'=>''} %>
 				<% end %>
 				<span data-role="button" id="TellUsYourKnowhow">
 					あなたのやり方教えてください。

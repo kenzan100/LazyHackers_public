@@ -6,7 +6,7 @@
 		<%= link_to "設定", edit_user_path(current_user) %>
 	<% else %>
 		<h1>LazyHackers</h1>
-		<%= link_to "新規登録", new_user_registration_path %>
+		<%= link_to "ログイン", new_user_session_path %>
 		<%= link_to "ホーム", scopes_path %>
 	<% end %>
 </div>
@@ -90,23 +90,23 @@
 	<div data-role="header" id="Header">
 		<h1>タイムライン</h1>
 		<% if user_signed_in? %>
-			<%= link_to "Sign Out", destroy_user_session_path %>
+			<%= link_to "ログアウト", destroy_user_session_path %>
 		<% else %>
-			<%= link_to "Sign up here", new_user_registration_path %>
+			<%= link_to "ログイン", new_user_session_path %>
 		<% end %>
-		<%= link_to "home", scopes_path %>
+		<%= link_to "ホーム", scopes_path %>
 	</div>
 	<div data-role="content">
 		<ul data-role="listview" data-filter="true"　data-filter-placeholder="ヒストリーを絞り込む">
 			<% if user_signed_in? %>
-			<% @feed_dates.each do |date| %>
+			<% @feed_dates.each do |date, progres| %>
 				<li data-role="list-divider" style="height: 10px;">
 					<span style="float:right;">
-						<%= date[0] %>
+						<%= date %>
 					</span>
 				</li>
-				<% @feed.each do |progre| %>
-					<% if date[0] == progre.done_when.strftime("%Y %m %d") %>
+				<% for progre in progres %>
+					<%# if date[0] == progre.done_when.strftime("%Y %m %d") %>
 					<li>
 					<% if progre.scope_id %>
 					<% link_to (Scope.find(progre.scope_id)) do %>
@@ -160,7 +160,7 @@
 						<% end %>
 					<% end %>
 					</li>
-					<% end %>
+					<%# end %>
 				<% end %>
 			<% end %>
 			<% else %>

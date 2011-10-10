@@ -12,6 +12,7 @@ Lazyhackers4::Application.routes.draw do
   resources :progres do
     member do
       post 'create_all'
+      post 'add_comment'
     end
   end
 

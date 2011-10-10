@@ -5,7 +5,7 @@
 	<th>ID</th>
     <th>Name</th>
     <th>Image url</th>
-    <th>Singled by</th>
+    <th>Next HackTag</th>
     <th></th>
     <th></th>
   </tr>
@@ -14,9 +14,14 @@
   <tr>
 	<td><%= hack_tag.id %></td>
     <td><%= hack_tag.name %></td>
-    <td><%#= image_tag hack_tag.image_url %></td>
-	<td><%= hack_tag.singled_by %></td>
-    <td><%= link_to 'Show', hack_tag %></td>
+    <td><%#= image_tag hack_tag.image_url, :size=>'25x25' %></td>
+	<td>
+		<% if HackTagFollow.exists?(:greater_hack_tag_id=>hack_tag.id) %>
+			<% HackTagFollow.where(:greater_hack_tag_id=>hack_tag.id).each do |next_hack_tag| %>
+				<%= HackTag.find(next_hack_tag.hack_tag_id).name %>(id:<%= HackTag.find(next_hack_tag.hack_tag_id).id %>)
+			<% end %>
+		<% end %>
+	</td>
     <td><%= link_to 'Edit', edit_hack_tag_path(hack_tag) %></td>
     <td><%= link_to 'Destroy', hack_tag, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>

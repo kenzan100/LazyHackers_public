@@ -4,7 +4,7 @@ class ProgresController < ApplicationController
   # GET /progres
   # GET /progres.xml
   def index
-    @progres = Progre.all
+    @progres = Progre.paginate(:page => params[:page])
 
     respond_to do |format|
       format.html # index.html.erb
@@ -44,16 +44,20 @@ class ProgresController < ApplicationController
     Progre.create_all_success(hack_tags, params[:user_id], params[:scope_id])
 
     @scope = Scope.find(params[:scope_id])
+    if hack_tags.count == 1
+      shack_tags = hack_tags
+    else
+      shack_tags = @scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false)
+    end
     
-    done_count = @scope.progres.where('DATE(done_when)=? AND scope_id = ? AND success = ?', Date.today, @scope.id, true).group(:user_id).each.count
-    users = Progre.where('scope_id=? AND success = ?', @scope.id, true).group(:user_id)
-    users_count = users.each.count
+    done_count = Progre.where('done_when>=? AND hack_tag_id=? AND success = ?', Time.now.beginning_of_day+5.hours, hack_tags.last.id, true).group(:user_id).each.count
+    users_count = params[:user_ids].length
     
     UsersHacktag.update_from_progres(Progre.where('user_id=? AND scope_id=? AND success = ?', current_user.id, @scope.id, true))
     
     if users_count > 1 && done_count == users_count && Time.now.hour > 9
-      users.each do |users_progre|
-        @mail = NotificationMailer.sendmail_congrats(User.find(users_progre.user_id).email, @scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false), @scope, current_user).deliver
+      params[:user_ids].each do |user_id|
+        @mail = NotificationMailer.sendmail_congrats(User.find(user_id).email, shack_tags, @scope, current_user).deliver
       end
       flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　お祝いメールが送られます。'
     elsif users_count > 1 && done_count == users_count
@@ -69,27 +73,37 @@ class ProgresController < ApplicationController
   # POST /progres.xml
   def create
     
-    if params[:create_all] == 'true'
-      hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
-      Progre.create_all_success_with_comment(hack_tags, params[:this_user_id], params[:this_scope_id], params[:this_comment])
-    else
-      @progre = Progre.new(params[:progre])
-    end
+    @progre = Progre.new(params[:progre])
     
-    if params[:create_all] == 'true'
-      @scope = Scope.find(params[:this_scope_id].to_i)
-      redirect_to @scope, :notice=>'ありがとう！あなたのtipsは皆を救うことでしょう。'
-    else
-      respond_to do |format|
-        if @progre.save
-          format.html { redirect_to(@progre, :notice => 'Progre was successfully created.') }
-          format.xml  { render :xml => @progre, :status => :created, :location => @progre }
-        else
-          format.html { render :action => "new" }
-          format.xml  { render :xml => @progre.errors, :status => :unprocessable_entity }
-        end
+    respond_to do |format|
+      if @progre.save
+        format.html { redirect_to(@progre, :notice => 'Progre was successfully created.') }
+        format.xml  { render :xml => @progre, :status => :created, :location => @progre }
+      else
+        format.html { render :action => "new" }
+        format.xml  { render :xml => @progre.errors, :status => :unprocessable_entity }
       end
     end
+    
+  end
+  
+  def add_comment
+    hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
+    current_user = User.find(params[:current_user_id])
+    
+    hack_tags.each do |hack_tag|
+      if current_user.progres.exists?(:hack_tag_id=>hack_tag.id, :success=>true)
+        current_user.progres.where(:hack_tag_id=>hack_tag.id, :success=>true).last.update_attributes(:comment=>params[:comment])
+      else
+        your_latest_progre_for_hack_tag = Progre.new(:hack_tag_id=>hack_tag.id, :user_id=>current_user.id, :success=>true, :scope_id=>params[:scope_id], :done_when=>Time.now)
+        your_latest_progre_for_hack_tag.comment = params[:comment]
+        your_latest_progre_for_hack_tag.save
+        #your_latest_progre_for_hack_tags.push(Progre.new(:hack_tag_id=>hack_tag.id, :user_id=>current_user.id, :success=>true, :scope_id=>params[:scope_id]))
+      end
+    end
+    
+    @scope = Scope.find(params[:scope_id].to_i)
+    redirect_to @scope, :notice=>'ありがとう！あなたのtipsは皆を救うことでしょう。'
   end
 
   # PUT /progres/1
