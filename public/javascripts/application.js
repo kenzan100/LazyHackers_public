@@ -2,13 +2,14 @@
 // This file is automatically included by javascript_include_tag :defaults
 
 $(document).bind("mobileinit", function(){ 
-$.mobile.ajaxEnabled = false; // ajaxを無効 
+  $.mobile.ajaxEnabled = false; // ajaxを無効 
+  
 });
 
-$(function(){  
+$(function(){
+
 	$('#UsersInThisScope a').click(function(){
 		var hoge = $(this).siblings('.user_id').text();
-		//$('#Cheering').html(hoge);
 		$('#Cheering #user_id').val(hoge);
 		$('#SeeProfile').html('<li><a href="/users/'+hoge+'/">この人のプロフィールを見る</a></li>')
 	});
@@ -27,9 +28,9 @@ $(function(){
 	  }
 	});
 	
-	$('#History #new_progre').hide();
+	$('#History #add_comment').hide();
 	$('#History #TellUsYourKnowhow').click(function(){
-  	$('#History #new_progre').show("slow");
+  	$('#History #add_comment').show("slow");
   	$('#History #TellUsYourKnowhow').hide();
 	});
 	
