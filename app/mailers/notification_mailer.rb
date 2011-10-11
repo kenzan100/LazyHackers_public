@@ -9,6 +9,12 @@ class NotificationMailer < ActionMailer::Base
   #
   #   en.notification_mailer.sendmail_cheer.subject
   #
+  def sendmail_feedback(feedback_content, current_username)
+    @content = feedback_content
+    @username = current_username
+    mail(:to => 'info@lazyhackers.com', :subject=>'ユーザからの大切なフィードバックよ！')
+  end
+  
   def sendmail_cheer(user_email, current_user, hack_tags)
     @current_user = current_user
     @hack_tags = hack_tags

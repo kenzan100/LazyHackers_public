@@ -14,6 +14,10 @@ Lazyhackers4::Application.routes.draw do
       post 'create_all'
       post 'add_comment'
     end
+    collection do
+      get 'notifications'
+      post 'post_notifications'
+    end
   end
 
   resources :hacks_scopes
@@ -32,6 +36,8 @@ Lazyhackers4::Application.routes.draw do
     end
     collection do
       get 'list'
+      get 'my_feedback'
+      post 'post_feedback'
     end
   end
 

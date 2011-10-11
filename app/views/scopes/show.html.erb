@@ -81,7 +81,7 @@
 	<% unless Progre.where('DATE(done_when)=?', Date.today).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) %>
 	<div id="CommitHere" style="display:block;">
 		<% form_tag create_all_progre_path, {:method=>:post} do %>
-		<%= submit_tag 'やったよ', {'data-icon'=>''} %>
+		<%= submit_tag 'やったよ', :disable_with=>'処理中..' %>
 
 			<% @hack_tags.each do |hack_tag| %>
 				<%= hidden_field_tag "hack_tag_ids[]", hack_tag.id %>
@@ -253,21 +253,6 @@
 								<% end %></span>
 							<% if progre.comment.present? %><div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
 						<% end %>
-					<% else %>
-						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
-						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
-							</h4>
-						<p style="display:inline;"><%= progre.hack_tag.name %>
-							</p>
-						<span style="float:right;"><% if progre.user.present? %>
-							<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
-							<% else %><%= truncate progre.user.email, :length=>12 %>
-							<% end %>
-							<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
-							<% else %><%= image_tag 'DummyImageURL.png', {:size=>'25x25'} %>
-							<% end %>
-							<% end %></span>
-						<% if progre.comment.present? %><div style="display:inline-block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
 					<% end %>
 					</li>
 				<% end %>

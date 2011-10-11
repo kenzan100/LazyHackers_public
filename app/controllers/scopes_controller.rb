@@ -16,7 +16,24 @@ class ScopesController < ApplicationController
         printer.print(f, :min_percent => 0, :print_file => true)
       end
     end
+  
+  def my_feedback
     
+  end
+  
+  def post_feedback
+    feedback_content = params[:feedback_content]
+    if user_signed_in?
+      @mail = NotificationMailer.sendmail_feedback(feedback_content, current_user.screen_name).deliver
+    else
+      @mail = NotificationMailer.sendmail_feedback(feedback_content, '名無しさん').deliver
+    end
+
+    respond_to do |format|
+      format.html { redirect_to(scopes_path, :notice => 'ありがとう！大切に読ませていただきます。') }
+    end
+  end
+  
   def list
     @scopes = Scope.all
     
@@ -69,6 +86,12 @@ class ScopesController < ApplicationController
   # GET /scopes
   # GET /scopes.xml
   def index
+    noti_hack_tag = HackTag.find(52)
+    if user_signed_in?
+      @noti_progres = noti_hack_tag.progres.where(:user_id=>current_user.id, :success=>false).order('updated_at DESC').limit(3)
+    else
+      @noti_progres = []
+    end
     
     @scopes = []
     Scope.all.each do |scope|

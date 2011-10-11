@@ -1,6 +1,19 @@
 # coding: utf-8
 
 class ProgresController < ApplicationController
+  
+  # POST
+  def post_notifications
+    Progre.create_notification(User.all, params[:comment], params[:inst_flag].to_i)
+    redirect_to notifications_progres_path, :notice=>'投稿されました:)'
+  end
+  
+  # GET
+  def notifications
+    noti_hack_tags = HackTag.find(52)
+    @notifications = noti_hack_tags.progres
+  end
+  
   # GET /progres
   # GET /progres.xml
   def index
@@ -41,7 +54,7 @@ class ProgresController < ApplicationController
 
   def create_all
     hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
-    Progre.create_all_success(hack_tags, params[:user_id], params[:scope_id])
+    success_progres = Progre.create_all_success(hack_tags, params[:user_id], params[:scope_id])
 
     @scope = Scope.find(params[:scope_id])
     if hack_tags.count == 1
@@ -59,9 +72,15 @@ class ProgresController < ApplicationController
       params[:user_ids].each do |user_id|
         @mail = NotificationMailer.sendmail_congrats(User.find(user_id).email, shack_tags, @scope, current_user).deliver
       end
+      success_progres.each do |success_progre|
+        success_progre.update_attributes(:comment=>'今日は、全員達成したよ!')
+      end
       flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　お祝いメールが送られます。'
     elsif users_count > 1 && done_count == users_count
-      flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　深夜なので、こっそりここで貴方にだけ伝えます。'
+      success_progres.each do |success_progre|
+        success_progre.update_attributes(:comment=>'今日は、全員達成したよ!')
+      end
+      flash[:notice] = 'おめでとう！　本日分、全員が達成しました！　深夜なので、こっそりここで貴方に伝えます。'
     else
       flash[:notice] = 'おつかれさまです！他の人を応援してみては？'
     end
@@ -113,7 +132,7 @@ class ProgresController < ApplicationController
 
     respond_to do |format|
       if @progre.update_attributes(params[:progre])
-        format.html { redirect_to(@progre, :notice => 'Progre was successfully updated.') }
+        format.html { redirect_to scopes_path, :notice => '更新成功!' }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

@@ -3,14 +3,29 @@ class Progre < ActiveRecord::Base
   belongs_to :user
   belongs_to :scope
   
+  def self.create_notification(users, comment, inst_flag)
+    noti_hack_tag = HackTag.where(:name=>'notification').first
+    
+    users.each do |user|
+      noti_progre_for_this_user = Progre.new(:user_id=>user.id, :hack_tag_id=>noti_hack_tag.id, :success=>false, :comment=>comment)
+      if inst_flag == 1
+        noti_progre_for_this_user.instruction_flag = true
+      end
+      noti_progre_for_this_user.save
+    end
+  end
+  
   def self.create_all_success(hack_tags, user_id, scope_id)
+    success_progres = []
     hack_tags.each do |hack_tag|
       progre = Progre.new(:hack_tag_id=>hack_tag.id, :done_when=>Time.now)
       progre.success = true
       progre.scope_id = scope_id
       progre.user_id = user_id
       progre.save
+      success_progres.push(progre)
     end
+    return success_progres
   end
   
   def self.create_all_success_with_comment(hack_tags, user_id, scope_id, comment)

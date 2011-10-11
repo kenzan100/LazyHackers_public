@@ -1,0 +1,34 @@
+<div data-role="header" id="Header">
+	<h3>
+		お知らせ一覧
+	</h3>
+	<%= link_to '戻る', :back %>
+	<%= link_to 'ホーム', scopes_path %>
+</div>
+
+<div data-role="content">
+	<p>
+		私達は、あなたの意見をもとにサイトを変えていきます。<%= link_to '一言送る', my_feedback_scopes_path %>
+	</p>
+	<ul>
+		<% @notifications.group(:comment).each do |noti| %>
+		<li>
+			<% unless noti.comment.blank? %><%= noti.comment %> (<%= noti.updated_at.strftime("%m/%d") %>)<%end%>
+		</li>
+		<% end %>
+	</ul>
+</div>
+
+<div>
+	<% if user_signed_in? && current_user.id == 1 || user_signed_in? && current_user.id == 4 %>
+		<% form_tag post_notifications_progres_path, {:method=>:post} do %>
+			(運営ビュー)お知らせを全ユーザに投稿する
+			<%= text_field_tag :comment, '' %><br>
+
+			新規登録者必読のインストラクションだったらチェックする
+			<%= check_box_tag :inst_flag %>
+
+			<%= submit_tag '送信' %>
+		<% end %>
+	<% end %>
+</div>

@@ -12,6 +12,10 @@
   <% end %>
 
   <div class="field">
+    <%= f.label :instruction_flag %><br />
+    <%= f.check_box :instruction_flag, {'data-role'=>'none'} %>
+  </div>
+  <div class="field">
     <%= f.label :success %><br />
     <%= f.check_box :success, {'data-role'=>'none'} %>
   </div>

@@ -1,5 +1,10 @@
 <h2>ログイン</h2>
 
+<p style="background:yellow;">
+	<%= notice %>
+	<%= alert %>
+</p>
+
 <%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
   <div><%= f.label :email, '登録アドレス'  %><br />
   <%= f.email_field :email, :placeholder=>"登録したメールアドレス" %></div>

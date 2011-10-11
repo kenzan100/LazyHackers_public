@@ -1,0 +1,12 @@
+<div data-role="header" id="Header">
+	<%= link_to '戻る', :back%>
+	<h2>Your Word</h2>
+	<%= link_to 'ホーム', scopes_path %>
+</div>
+
+<div data-role="content">
+	<%= form_tag({ :controller => 'scopes', :action=>'post_feedback'}) do %>
+		<%= text_area_tag 'feedback_content', '' %>
+		<%= submit_tag '一言送る' %>
+	<% end %>
+</div>
