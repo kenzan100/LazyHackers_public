@@ -2,6 +2,11 @@
 
 class ProgresController < ApplicationController
   
+  def destroy_comment_all
+    Progre.destroy_notification(params[:comment])
+    redirect_to notifications_progres_path, :notice=>'削除されました!'
+  end
+  
   # POST
   def post_notifications
     Progre.create_notification(User.all, params[:comment], params[:inst_flag].to_i)

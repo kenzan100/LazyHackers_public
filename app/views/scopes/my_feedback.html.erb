@@ -5,6 +5,9 @@
 </div>
 
 <div data-role="content">
+	<p>
+		どんな事でも良いよ！
+	</p>
 	<%= form_tag({ :controller => 'scopes', :action=>'post_feedback'}) do %>
 		<%= text_area_tag 'feedback_content', '' %>
 		<%= submit_tag '一言送る' %>

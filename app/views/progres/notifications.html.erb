@@ -6,6 +6,11 @@
 	<%= link_to 'ホーム', scopes_path %>
 </div>
 
+<p style="background:yellow;">
+	<%= notice %>
+	<%= alert %>
+</p>
+
 <div data-role="content">
 	<p>
 		私達は、あなたの意見をもとにサイトを変えていきます。<%= link_to '一言送る', my_feedback_scopes_path %>
@@ -13,22 +18,33 @@
 	<ul>
 		<% @notifications.group(:comment).each do |noti| %>
 		<li>
-			<% unless noti.comment.blank? %><%= noti.comment %> (<%= noti.updated_at.strftime("%m/%d") %>)<%end%>
+			<% unless noti.comment.blank? %>
+				<%= noti.comment %> (<%= noti.updated_at.strftime("%m/%d") %>)
+			<%end%>
+			
+			<% if user_signed_in? && current_user.id == 1 || user_signed_in? && current_user.id == 4 %>
+				<% form_tag destroy_comment_all_progres_path, {:method=>:post} do %>
+					<%= hidden_field_tag :comment, noti.comment %>
+					<%= submit_tag '削除', {'data-role'=>'none'} %>
+				<% end %>
+			<% end %>
 		</li>
 		<% end %>
 	</ul>
-</div>
+	
+	<div>
+		<% if user_signed_in? && current_user.id == 1 || user_signed_in? && current_user.id == 4 %>
+			<% form_tag post_notifications_progres_path, {:method=>:post} do %>
+				(運営ビュー)お知らせを全ユーザに投稿する
+				<%= text_field_tag :comment, '' %><br>
 
-<div>
-	<% if user_signed_in? && current_user.id == 1 || user_signed_in? && current_user.id == 4 %>
-		<% form_tag post_notifications_progres_path, {:method=>:post} do %>
-			(運営ビュー)お知らせを全ユーザに投稿する
-			<%= text_field_tag :comment, '' %><br>
+				新規登録者必読のインストラクションだったらチェックする
+				<%= check_box_tag :inst_flag %>
 
-			新規登録者必読のインストラクションだったらチェックする
-			<%= check_box_tag :inst_flag %>
-
-			<%= submit_tag '送信' %>
+				<%= submit_tag '送信' %>
+			<% end %>
 		<% end %>
-	<% end %>
+	</div>
+
 </div>
+

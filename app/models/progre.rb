@@ -3,6 +3,10 @@ class Progre < ActiveRecord::Base
   belongs_to :user
   belongs_to :scope
   
+  def self.destroy_notification(comment)
+    Progre.where(:comment=>comment).destroy_all
+  end
+  
   def self.create_notification(users, comment, inst_flag)
     noti_hack_tag = HackTag.where(:name=>'notification').first
     

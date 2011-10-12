@@ -1,5 +1,11 @@
-<h1>アカウント情報</h1>
 
+<h2>設定画面</h2>
+
+<h3><%= link_to 'お知らせ一覧を見る', notifications_progres_path %></h3>
+
+<h4>
+	あなたのアカウント情報
+</h4>
 <%= form_for(@user) do |f| %>
   <% if @user.errors.any? %>
     <div id="error_explanation">
