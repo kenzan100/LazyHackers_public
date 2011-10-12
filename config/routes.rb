@@ -17,6 +17,7 @@ Lazyhackers4::Application.routes.draw do
     collection do
       get 'notifications'
       post 'post_notifications'
+      post 'destroy_comment_all'
     end
   end
 
