@@ -30,12 +30,12 @@
 			</h3>
 			<% @noti_progres.each do |notification| %>
 			<div data-role="collapsible">
-				<h4><%= truncate notification.comment, :length=>12 %></h4>
-				<% if notification.comment.length > 12 %>
+				<h4><%= truncate notification.comment, :length=>18 %></h4>
+				<%# if notification.comment.length > 12 %>
 				<p>
 					<%= notification.comment %>
 				</p>
-				<% end %>
+				<%# end %>
 				<% form_for notification do |f| %>
 					<%= f.hidden_field :done_when, {'value'=>Time.now}%>
 					<%= f.hidden_field :success, {'value'=>true} %>
