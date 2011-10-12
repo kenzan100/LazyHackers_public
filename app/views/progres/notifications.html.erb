@@ -19,6 +19,9 @@
 		<% @notifications.group(:comment).each do |noti| %>
 		<li>
 			<% unless noti.comment.blank? %>
+				<span style="font-weight:bold;">
+					<%= truncate noti.comment, {:length=>30, :separator=>'。'} %>
+				</span>
 				<%= noti.comment %> (<%= noti.updated_at.strftime("%m/%d") %>)
 			<%end%>
 			
