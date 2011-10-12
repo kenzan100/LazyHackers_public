@@ -106,7 +106,8 @@ class ScopesController < ApplicationController
     
     if user_signed_in?
       @friends = []
-      @feed = []
+      feed = []
+      @date_and_feeds = []
       
       @my_scopes = Hash.new
       current_user.scopes.each do |my_scope|
@@ -127,14 +128,19 @@ class ScopesController < ApplicationController
       
       current_user.scopes.each do |my_scope|
         @friends.each do |friend|
-          @feed += friend.progres.where(:hack_tag_id=>my_scope.hack_tags.last.id, :success=>true).order('done_when DESC').limit(5)
-            #@feed.push(u_progre)
+          one_shallow_feeds = Progre.one_shallow_point_progres(my_scope.id, friend.id)
+          feed += one_shallow_feeds
+          #unless one_shallow_feeds.index(my_scope.id)
+            feed += friend.progres.where(:hack_tag_id=>my_scope.hack_tags.last.id, :success=>true).order('done_when DESC').limit(5)
           #end
         end
       end
-      @feed.uniq!
-      @feed = @feed.sort{|a, b| b.done_when<=>a.done_when}
-      @feed_dates = @feed.group_by{|e| e.done_when.strftime("%Y %m %d")}
+      feed.uniq!
+      feed = feed.sort{|a, b| b.done_when<=>a.done_when}
+      @date_and_feeds = feed.group_by{|e| e.done_when.strftime("%Y %m %d")}
+      @date_and_feeds.each do |date, feed|
+        feed.uniq_by!{|e| e.scope_id.to_s+e.user_id.to_s}
+      end
     end
     
     respond_to do |format|

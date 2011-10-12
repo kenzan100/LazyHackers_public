@@ -37,3 +37,6 @@ gem 'oa-oauth', :require=>'omniauth/oauth'
 gem 'jquery-rails'
 gem 'yaml_db'
 gem 'ruby-prof'
+
+gem 'will_paginate', '~> 3.0.2'
+gem 'whenever', :require=>false

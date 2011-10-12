@@ -120,13 +120,13 @@
 	<div data-role="content">
 		<ul data-role="listview" data-filter="true"　data-filter-placeholder="ヒストリーを絞り込む">
 			<% if user_signed_in? %>
-			<% @feed_dates.each do |date, progres| %>
+			<% @date_and_feeds.each do |date, progres| %>
 				<li data-role="list-divider" style="height: 10px;">
 					<span style="float:right;">
 						<%= date %>
 					</span>
 				</li>
-				<% for progre in progres %>
+				<% progres.each do |progre| %>
 					<%# if date[0] == progre.done_when.strftime("%Y %m %d") %>
 					<li>
 					<% if progre.scope_id %>

@@ -3,6 +3,20 @@ class Progre < ActiveRecord::Base
   belongs_to :user
   belongs_to :scope
   
+  def self.one_shallow_point_progres(scope_id, user_id)
+    progres = []
+    scope = Scope.find(scope_id)
+    user = User.find(user_id)
+    scope.hack_tags.last.hack_tag_follows.each do |htf|
+      one_shallow_hack_tag = HackTag.find(htf.greater_hack_tag_id)
+      if user.progres.exists?(:hack_tag_id=>one_shallow_hack_tag.id, :success=>true)
+        progres += user.progres.where('scope_id != ?', scope_id).where(:hack_tag_id=>one_shallow_hack_tag.id, :success=>true).order('done_when DESC').limit(5)
+      end
+    end
+    
+    return progres
+  end
+  
   def self.destroy_notification(comment)
     Progre.where(:comment=>comment).destroy_all
   end
