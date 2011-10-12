@@ -36,7 +36,7 @@
 		<% if user_signed_in? && current_user.id == 1 || user_signed_in? && current_user.id == 4 %>
 			<% form_tag post_notifications_progres_path, {:method=>:post} do %>
 				(運営ビュー)お知らせを全ユーザに投稿する
-				<%= text_field_tag :comment, '' %><br>
+				<%= text_area_tag :comment, '' %><br>
 
 				新規登録者必読のインストラクションだったらチェックする
 				<%= check_box_tag :inst_flag %>
