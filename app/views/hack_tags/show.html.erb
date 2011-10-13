@@ -1,15 +1,18 @@
-<p id="notice"><%= notice %></p>
+<div data-role="header" id="Header">
+	<h3>何をやってますか？</h3>
+	<%= link_to 'ホーム', scopes_path %>
+</div>
 
-<p>
-  <b>Name:</b>
-  <%= @hack_tag.name %>
+<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
+	<%= notice %><%= alert %>
 </p>
 
-<p>
-  <b>Image url:</b>
-  <%= @hack_tag.image_url %>
-</p>
-
-
-<%= link_to 'Edit', edit_hack_tag_path(@hack_tag) %> |
-<%= link_to 'Back', hack_tags_path %>
+<div data-role="content">
+	<ul data-role="listview">
+		<% @scopes.each do |scope| %>
+		<li>
+			<%= link_to scope.hack_tags.last.name, scope %>
+		</li>
+		<% end %>
+	</ul>
+</div>

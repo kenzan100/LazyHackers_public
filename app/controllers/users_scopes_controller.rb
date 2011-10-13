@@ -99,7 +99,7 @@ class UsersScopesController < ApplicationController
     @users_scope.destroy
 
     respond_to do |format|
-      format.html { redirect_to(scopes_url, :notice=>'あなたの挑戦中リストから、そのセットが削除されました。「やったよ」記録は残っているので、また興味があったときに見てくださいね！') }
+      format.html { redirect_to(scopes_url, :notice=>'一旦、おつかれさまです。「やったよ」記録は残っているので、また興味があったときに見てくださいね！') }
       format.xml  { head :ok }
     end
   end

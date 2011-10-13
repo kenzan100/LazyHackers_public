@@ -7,13 +7,18 @@
 		<%= link_to name, edit_user_path(current_user) %>
 	<% else %>
 		<h1>LazyHackers</h1>
-		<%= link_to "ログイン", new_user_session_path %>
-		<%= link_to "ホーム", scopes_path %>
+		<span data-role="button" class="changeToSignInPage" style="position:absolute; top:.4em;">
+			ログイン
+		</span>
+		<%#= link_to "ログイン", new_user_session_path, {:class=>'changePage'} %>
+		<%= link_to "ホーム", scopes_path, {:class=>'ui-btn-right'} %>
 	<% end %>
-</div>
+	</div>
+	
 	<p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
 		<%= notice %><%= alert %>
 	</p>
+	
 	<div data-role="content">
 	
 	<%# HackTag.check_exit(HackTag.all) %>
@@ -23,7 +28,7 @@
 	<%# Progre.from_party_id_to_scope_id %>
 	<%# Progre.from_party_id_to_hack_tag_id %>
 
-	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" data-split-icon="delete" style="margin-bottom:15px;">
+	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" style="margin-bottom:15px;">
 		<% if @noti_progres.count >= 1 %>
 		<div data-role="collapsible-set">
 			<h3 style="margin:0 0 0 12px; font-weight:normal; font-size:14px;">未読ニュース! <span style="float:right;"><%= link_to '一言送る', my_feedback_scopes_path %> | <%= link_to '全部見る', notifications_progres_path %></span>
@@ -49,126 +54,124 @@
 		<li data-role="list-divider">ただ今 参加中</li>
 
 		<% @my_scopes.each do |my_scope, tf| %>
-		<li>
-		<% link_to(my_scope) do %>
-			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon'} %>
-			<p style="margin-left:20px; margin-top:0; margin-bottom:2px; font-weight:bold;">
+		<li class="changePage" url="scopes/<%=my_scope.id%>" data-icon="false" style="padding-right:0px;">
+		<%# link_to(my_scope) do %>
+			<%= image_tag my_scope.image_url, {'class'=>'ui-li-icon', 'style'=>'width:35px; margin-top:-9px;'} %>
+			<p style="margin-left:10px; margin-top:0; display:inline-block; margin-bottom:2px; font-weight:bold;">
 			<% my_scope.hack_tags.each_with_index do |mhack_tag, i| %>
-				<% if i > 0  %>
-					<%= mhack_tag.name %>
-				<% end %>
+				<% if i > 0  %><%= mhack_tag.name %><% end %>
 				<% if mhack_tag.root_flag == true && my_scope.hack_tags.where('root_flag IS NULL OR root_flag = ?', false).count == 0 %>
 					<%= mhack_tag.name %>
 				<% end %>
 			<% end %>
 			</p>
-			<p class="ui-li-desc" style="margin-left:20px; margin-top:0; margin-bottom:0;">
-				<% if tf %>やった<%else%>まだ<% end %>
+			<p class="ui-li-aside" style="width:30%;">
+				<%= link_to '休止?', my_scope.users_scopes.where(:user_id=>current_user.id).first, {:confirm=>'このセットを休止しますか？', :method=>:delete, 'style'=>'display:inline-block; color:gray; font-size:11px;'} %>
+				<span style="">
+					<% if tf %><%= image_tag 'button_done.png', :size=>'50x25' %><%else%><%= image_tag 'button_undone.png', :size=>'50x25' %><% end %>
+				</span>
 			</p>
-		<% end %>
-		<%= link_to 'RemoveFromMyScope', my_scope.users_scopes.where(:user_id=>current_user.id).first, :confirm=>'このセットを消しますか？', :method=>:delete %>
+		<%# end %>
 		</li>
 		<% end %>
-		<li data-role="list-divider">
-			他にも習慣ありますか？
-		</li>
+	<li><a href="#RootHackTags">他も探す</a></li>
+	</ul>
 	<% else %>
 	<li data-role="list-divider">何を習慣にしましょうか？</li>
-	<% end %>
 	</ul>
-
 	<ul data-role="listview" data-divider-theme="e">
-	<% @scopes.each do |scope| %>
-		<li style="">
-			<% link_to from_search_scope_path(scope) do %>
-				<%= image_tag scope.hack_tags.first.image_url, {'class'=>'ui-li-thumb'}%>
+	<% @root_hack_tags.each do |root_hack_tag| %>
+		<li style="" class="changePage" url="hack_tags/<%=root_hack_tag.id%>">
+			<%# link_to(root_hack_tag) do %>
+				<%= image_tag root_hack_tag.image_url, {'class'=>'ui-li-thumb'}%>
 				<h3>
-					<%= scope.hack_tags.first.name %>
+					<%= root_hack_tag.name %>
 				</h3>
 				
 				<p style="margin-top:5px;">
-					<% HackTagFollow.where(:greater_hack_tag_id=>scope.hack_tags.first.id).each do |hacktagfollow| %>
+					<% HackTagFollow.where(:greater_hack_tag_id=>root_hack_tag.id).each do |hacktagfollow| %>
 						<%= HackTag.find(hacktagfollow.hack_tag_id).name %>, 
 					<% end %>
 				</p>
-				
-			<% end %>
+			<%# end %>
 		</li>
 	<% end %>
 	</ul>
-</div>
-	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
-	<div data-role="navbar">
-		<ul class="ui-grid-a">
-			<li class="ui-block-a">	<%= link_to 'ホーム', '#YourScope'%></li>
-			<li class="ui-block-b">	<%= link_to 'タイムライン', '#Feed'%></li>
-		</ul>
+	<% end %>
+
+	<% if user_signed_in? %>
+	<ul data-role="listview" data-divider-theme="e" data-filter-placeholder="絞り込み検索" data-filter="true">
+		<% @date_and_feeds.each do |date, progres| %>
+			<li data-role="list-divider" data-theme="e" style="height: 10px;">
+				<span style="float:right;">
+					<%= date %>
+				</span>
+			</li>
+			<% progres.each do |progre| %>
+				<%# if date[0] == progre.done_when.strftime("%Y %m %d") %>
+				<li>
+				<% if progre.scope_id %>
+				<% link_to (Scope.find(progre.scope_id)) do %>
+					<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
+					<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
+</h4>
+					<p style="display:inline;"><% Scope.find(progre.scope_id).hack_tags.where('root_flag IS NULL OR root_flag = ?', false).each do |hack_tag|%><%= hack_tag.name %><%end%></p>
+					<span style="float:right;">
+					<% if progre.user.present? %>
+						<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
+						<% else %><%= truncate progre.user.email, :length=>12 %>
+						<% end %>
+						<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
+						<% else %><%= image_tag 'DummyImageURL.png', {:size=>'25x25'} %>
+						<% end %>
+					<% end %>
+					</span>
+
+					<% if progre.comment.present? %>
+						<div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;">
+						<%= progre.comment %></span></div>
+					<% end %>
+				<% end %>
+				<% end %>
+				</li>
+				<%# end %>
+			<% end %>
+		<% end %>
+	</ul>
+	<% else %>
+	<ul data-role="listview" style="margin-top:15px;" data-divider-theme="e">
+		<li data-role="list-divider">
+			ログインすると、自分とみんなの履歴がみれるようになります。
+		</li>
+	</ul>
+	<% end %>
 	</div>
-</div>
 </div>
 
-<div data-role="page" id="Feed">
+<% if user_signed_in? && current_user.scopes.length > 0 %>
+<div data-role="page" id="RootHackTags">
 	<div data-role="header" id="Header">
-		<h1>タイムライン</h1>
-		<% if user_signed_in? %>
-			<%= link_to "ログアウト", destroy_user_session_path %>
-		<% else %>
-			<%= link_to "ログイン", new_user_session_path %>
-		<% end %>
-		<%= link_to "ホーム", scopes_path %>
+		<h3>何をやってますか?</h3>
 	</div>
 	<div data-role="content">
-		<ul data-role="listview" data-filter="true"　data-filter-placeholder="ヒストリーを絞り込む">
-			<% if user_signed_in? %>
-			<% @date_and_feeds.each do |date, progres| %>
-				<li data-role="list-divider" style="height: 10px;">
-					<span style="float:right;">
-						<%= date %>
-					</span>
-				</li>
-				<% progres.each do |progre| %>
-					<%# if date[0] == progre.done_when.strftime("%Y %m %d") %>
-					<li>
-					<% if progre.scope_id %>
-					<% link_to (Scope.find(progre.scope_id)) do %>
-						<%= image_tag 'brightness_from_glyphish.png', {'class'=>'ui-li-icon'}%>
-						<h4 style="display:inline-block; margin:5px 0 0 0; font-size:90%;"><%= progre.done_when.hour %>時ごろ
-</h4>
-						<p style="display:inline;"><% Scope.find(progre.scope_id).hack_tags.where('root_flag IS NULL OR root_flag = ?', false).each do |hack_tag|%><%= hack_tag.name %><%end%></p>
-						<span style="float:right;">
-						<% if progre.user.present? %>
-							<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
-							<% else %><%= truncate progre.user.email, :length=>12 %>
-							<% end %>
-							<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
-							<% else %><%= image_tag 'DummyImageURL.png', {:size=>'25x25'} %>
-							<% end %>
+		<ul data-role="listview" data-divider-theme="e">
+		<% @root_hack_tags.each do |root_hack_tag| %>
+			<li style="" class="changePage" url="hack_tags/<%=root_hack_tag.id%>">
+				<%# link_to(root_hack_tag) do %>
+					<%= image_tag root_hack_tag.image_url, {'class'=>'ui-li-thumb'}%>
+					<h3>
+						<%= root_hack_tag.name %>
+					</h3>
+
+					<p style="margin-top:5px;">
+						<% HackTagFollow.where(:greater_hack_tag_id=>root_hack_tag.id).each do |hacktagfollow| %>
+							<%= HackTag.find(hacktagfollow.hack_tag_id).name %>, 
 						<% end %>
-						</span>
-						
-						<% if progre.comment.present? %>
-							<div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;">
-							<%= progre.comment %></span></div>
-						<% end %>
-					<% end %>
-					<% end %>
-					</li>
-					<%# end %>
-				<% end %>
-			<% end %>
-			<% else %>
-				<li>
-					サインインすると、自分とみんなの履歴がみれるようになります。
-				</li>
-			<% end %>
+					</p>
+				<%# end %>
+			</li>
+		<% end %>
 		</ul>
 	</div>
-	<div data-role="footer" data-id="foo1" id="Footer" data-position="fixed">
-		<div data-role="navbar">
-			<ul class="ui-grid-a">
-				<li class="ui-block-a">	<%= link_to 'ホーム', '#YourScope'%></li>
-				<li class="ui-block-b">	<%= link_to 'タイムライン', '#Feed'%></li>
-			</ul>
-		</div>
-	</div>
 </div>
+<% end %>

@@ -16,6 +16,25 @@ class HackTagsController < ApplicationController
   # GET /hack_tags/1.xml
   def show
     @hack_tag = HackTag.find(params[:id])
+    
+    @next_hack_tags = []
+    HackTagFollow.where(:greater_hack_tag_id=>@hack_tag.id).each do |htf|
+    	@next_hack_tags.push(HackTag.find(htf.hack_tag_id))
+    end
+
+    @scopes = []
+    @hack_tag.scopes.each do |scope|
+      if scope.hack_tags.length==1
+        @scopes.push(scope)
+      end
+    end
+    @next_hack_tags.each do |next_hack_tag|
+      next_hack_tag.scopes.each do |scope|
+        if scope.hack_tags.length == 2
+          @scopes.push(scope)
+        end
+      end
+    end
 
     respond_to do |format|
       format.html # show.html.erb

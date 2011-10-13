@@ -16,6 +16,22 @@
   <%= csrf_meta_tag %>
 
 <script type="text/javascript">
+$(document).delegate(".changeToSignInPage", "click", function(event) {  
+		console.log('clicked');
+        $.mobile.changePage("users/sign_in", {
+			transition: "slide"
+        });
+    });
+$(document).delegate(".changePage", "click", function(event) {  
+		url = $(this).attr("url");
+		console.log(url);
+	    $.mobile.changePage(url, {
+			transition: "slide"
+	     });
+	 });
+</script>
+
+<script type="text/javascript">
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-25333456-1']);

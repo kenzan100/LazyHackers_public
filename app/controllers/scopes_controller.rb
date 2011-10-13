@@ -93,16 +93,7 @@ class ScopesController < ApplicationController
       @noti_progres = []
     end
     
-    @scopes = []
-    Scope.all.each do |scope|
-      if scope.hack_tags.where('singled_by IS NULL').length == 1
-        HackTag.where(:root_flag=>true).each do |root_ht|
-          if scope.hack_tags.exists?(:id=>root_ht.id)
-            @scopes.push(scope)
-          end
-        end
-      end
-    end
+    @root_hack_tags = HackTag.where(:root_flag=>true)
     
     if user_signed_in?
       @friends = []
