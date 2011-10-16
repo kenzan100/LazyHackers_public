@@ -5,9 +5,9 @@
 		<% if params[:from_search]=='true' %>
 			<%= link_to '戻る', hack_tag_path(@scope.hack_tags.first) %>
 		<% end %>
-		<% unless user_signed_in? %>
-			<%= link_to "ログイン", new_user_session_path %>
-		<% end %>
+		<%# unless user_signed_in? %>
+			<%#= link_to "ログイン", new_user_session_path %>
+		<%# end %>
 			<%= link_to "ホーム", scopes_path, {'class'=>'ui-btn-right'} %>
 		
 		<div data-role="navbar">
