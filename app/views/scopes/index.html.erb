@@ -51,6 +51,14 @@
 		</div>
 		<% end %>
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
+	<!--
+	<div data-role="navbar" data-theme="e">
+		<ul>
+			<li><a href="#"　data-theme="e">ただ今 参加中</a></li>
+			<li><a href="#" data-theme="c">他にも探す</a></li>
+		</ul>
+	</div>
+	-->
 		<li data-role="list-divider">ただ今 参加中</li>
 
 		<% @my_scopes.each do |my_scope, tf| %>
@@ -74,7 +82,7 @@
 		<%# end %>
 		</li>
 		<% end %>
-	<li><a href="#RootHackTags">他も探す</a></li>
+	<li data-theme="e"><a href="#RootHackTags">他にも探す</a></li>
 	</ul>
 	<% else %>
 	<li data-role="list-divider">何を習慣にしましょうか？</li>
@@ -100,7 +108,12 @@
 	<% end %>
 
 	<% if user_signed_in? %>
-	<ul data-role="listview" data-divider-theme="e" data-filter-placeholder="絞り込み検索" data-filter="true">
+	<ul data-role="listview" data-divider-theme="e" style="margin-top:10px; margin-bottom:15px;">
+		<li data-role="list-divider">
+				タイムライン
+		</li>
+	</ul>
+	<ul data-role="listview" data-inset="true" style="" data-divider-theme="e" data-filter-placeholder="絞り込み検索" data-filter="true">
 		<% @date_and_feeds.each do |date, progres| %>
 			<li data-role="list-divider" data-theme="e" style="height: 10px;">
 				<span style="float:right;">
@@ -152,6 +165,7 @@
 <div data-role="page" id="RootHackTags">
 	<div data-role="header" id="Header">
 		<h3>何をやってますか?</h3>
+		<a href="#YourScope">戻る</a>
 	</div>
 	<div data-role="content">
 		<ul data-role="listview" data-divider-theme="e">

@@ -1,6 +1,14 @@
 <div data-role="header" id="Header">
 	<h3>何をやってますか？</h3>
-	<%= link_to 'ホーム', scopes_path %>
+	<%= link_to '戻る', '/scopes#RootHackTags' %>
+	<%= link_to 'ホーム', scopes_path, {:class=>'ui-btn-right'} %>
+	<div data-role="navbar">
+		<ul class="ui-grid-b">
+			<li class="ui-block-a"><a href="#"><%= @hack_tag.name %></a></li>
+			<li class="ui-block-b"></li>
+			<li class="ui-block-c"></li>
+		</ul>
+	</div>
 </div>
 
 <p class="notice" style="background:yellow; margin:0; font-weight:bold; padding-left:10px;">
@@ -8,16 +16,16 @@
 </p>
 
 <div data-role="content">
+	
 	<ul data-role="listview">
 		<% @scopes.each do |scope| %>
-		<li>
-			<% link_to(scope, {'style'=>'min-height:40px;'}) do %>
+		<li data-icon="false">
+			<% link_to(scope_path(scope, :from_search=>"true"), {'style'=>'min-height:40px;'}) do %>
 				<span style="margin-left:20px;">
 					<%= scope.hack_tags.last.name %>
 				</span>
 				<%= image_tag scope.image_url, {'class'=>'ui-li-icon'} %>
 				<span class="ui-li-desc" style="margin-left:22px; margin-top:2px;">
-					70%
 				</span>
 				<span class="ui-li-aside">
 					<% scope.hack_tags.last.users.each do |user| %>

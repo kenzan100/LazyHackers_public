@@ -150,7 +150,6 @@ class ScopesController < ApplicationController
   # GET /scopes/1
   # GET /scopes/1.xml
   def show
-    
     if flash[:from_your_set] == 'true'
       flash.keep(:from_your_set)
       flash.keep(:current_set_id)
@@ -313,7 +312,7 @@ class ScopesController < ApplicationController
         #end
       #else
         @mail = NotificationMailer.sendmail_cheer(user.email, current_user, hack_tags).deliver
-        redirect_to(@scope, :notice => 'ありがとう！応援メールが正しく送信できました！')
+        redirect_to(@scope, :notice => 'ありがとう！応援メッセージが正しく送信できました！')
       #end
   end
   

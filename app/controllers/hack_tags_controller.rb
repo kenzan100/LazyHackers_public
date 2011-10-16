@@ -23,11 +23,6 @@ class HackTagsController < ApplicationController
     end
 
     @scopes = []
-    @hack_tag.scopes.each do |scope|
-      if scope.hack_tags.length==1
-        @scopes.push(scope)
-      end
-    end
     @next_hack_tags.each do |next_hack_tag|
       next_hack_tag.scopes.each do |scope|
         if scope.hack_tags.length == 2
@@ -35,6 +30,7 @@ class HackTagsController < ApplicationController
         end
       end
     end
+    @scopes = @scopes.sort{|a, b| b.hack_tags.last.users.length<=>a.hack_tags.last.users.length}
 
     respond_to do |format|
       format.html # show.html.erb
