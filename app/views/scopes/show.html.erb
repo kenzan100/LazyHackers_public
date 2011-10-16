@@ -1,4 +1,4 @@
-<div data-role="page" id="Scope" data-add-back-btn="true">
+<div data-role="page" id="Scope" data-add-back-btn="true" style="overflow:hidden;">
 	<div data-role="header" id="Header">
 		<h1><% if params[:from_search]=='true'%>何をやってますか？<%else%>
 			<%@shack_tags.each do |ht|%><%=ht.name%><%end%><%end%></h1>
