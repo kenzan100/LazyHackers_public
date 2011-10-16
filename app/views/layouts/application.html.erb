@@ -16,13 +16,13 @@
   <%= csrf_meta_tag %>
 
 <script type="text/javascript">
-$(document).delegate(".changeToSignInPage", "click", function(event) {  
+$(document).delegate(".changeToSignInPage", "tap", function(event) {  
 		console.log('clicked');
         $.mobile.changePage("users/sign_in", {
 			transition: "slide"
         });
     });
-$(document).delegate(".changePage", "click", function(event) {  
+$(document).delegate(".changePage", "tap", function(event) {  
 		url = $(this).attr("url");
 		console.log(url);
 	    $.mobile.changePage(url, {
