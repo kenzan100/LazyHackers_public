@@ -39,5 +39,17 @@
 			<% end %>
 		</li>
 		<% end %>
+		<li>
+			<% if user_signed_in? %>
+			<% form_tag create_hack_tag_and_hacks_scope_hack_tags_path, {:method=>:post} do %>
+				<%= hidden_field_tag :wanting_new_tag, true %>
+				<%= hidden_field_tag :this_hack_tag_id, @hack_tag.id %>
+				<%= hidden_field_tag :singled_by, current_user.id %>
+				<%= text_field_tag :name, '', {'placeholder'=>'つくりたい習慣の名前', 'data-theme'=>'e'} %>
+				<%= text_field_tag :image_url, '', {'placeholder'=>'URL', 'style'=>'display:none;'}%>
+				<%= submit_tag '新規作成', {'data-theme'=>''} %>
+			<% end %>
+			<% end %>
+		</li>
 	</ul>
 </div>

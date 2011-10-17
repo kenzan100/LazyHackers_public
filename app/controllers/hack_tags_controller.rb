@@ -56,14 +56,17 @@ class HackTagsController < ApplicationController
 
   # POST
   def create_hack_tag_and_hacks_scope
-    this_hack_tags = Scope.find(params[:this_scope_id]).hack_tags
+    if params[:this_scope_id]
+      this_hack_tags = Scope.find(params[:this_scope_id]).hack_tags
+    else
+      this_hack_tags = HackTag.where(:id=>params[:this_hack_tag_id])
+    end
     
     new_hack_tag = HackTag.new(:name=>params[:name], :image_url=>params[:image_url])
     new_hack_tag.save
     hack_tag_follow = HackTagFollow.new(:greater_hack_tag_id=>this_hack_tags.last.id, :hack_tag_id=>new_hack_tag.id)
     hack_tag_follow.save
     
-    #this_hack_tags.push(new_hack_tag)
     new_hack_tag_objects = HackTag.where(:id=>new_hack_tag.id)
     @creating_scope = Scope.create_one_more_depth_scope(this_hack_tags+new_hack_tag_objects)
     
