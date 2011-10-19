@@ -1,2 +1,0 @@
-module PartiesScopesHelper
-end

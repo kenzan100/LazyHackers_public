@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111011093502) do
+ActiveRecord::Schema.define(:version => 20111019031024) do
 
   create_table "hack_tag_follows", :force => true do |t|
     t.integer  "hack_tag_id"
@@ -25,9 +25,6 @@ ActiveRecord::Schema.define(:version => 20111011093502) do
     t.string   "image_url"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "duration"
-    t.boolean  "category_flag"
-    t.boolean  "picture_flag"
     t.integer  "created_by"
     t.integer  "singled_by"
     t.boolean  "root_flag"
@@ -35,18 +32,6 @@ ActiveRecord::Schema.define(:version => 20111011093502) do
 
   create_table "hacks_scopes", :force => true do |t|
     t.integer  "hack_tag_id"
-    t.integer  "scope_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "parties_hacktags", :force => true do |t|
-    t.integer "party_id"
-    t.integer "hack_tag_id"
-  end
-
-  create_table "parties_scopes", :force => true do |t|
-    t.integer  "party_id"
     t.integer  "scope_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -61,10 +46,8 @@ ActiveRecord::Schema.define(:version => 20111011093502) do
     t.datetime "updated_at"
     t.integer  "scope_id"
     t.integer  "cheered_by"
-    t.time     "start_time"
     t.boolean  "graduated"
     t.boolean  "dropout"
-    t.integer  "party_id"
     t.string   "comment"
     t.boolean  "instruction_flag"
   end
@@ -95,7 +78,7 @@ ActiveRecord::Schema.define(:version => 20111011093502) do
     t.string   "access_token"
     t.string   "access_secret"
     t.string   "image_url"
-    t.datetime "wakeup_time"
+    t.datetime "waketup_time"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
