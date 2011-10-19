@@ -227,8 +227,10 @@
 							<% if progre.user.screen_name.present? %><%= progre.user.screen_name %>
 							<% else %><%= truncate progre.user.email, :length=>12 %>
 							<% end %>
-							<% if progre.user.image_url.present? %><%= image_tag progre.user.image_url, {:size=>'25x25'} %>
-							<% else %><%= image_tag 'DummyImageUrl.png', {:size=>'25x25'} %>
+							<% if progre.user.image_url.present? %>
+								<%= image_tag progre.user.image_url, {:size=>'25x25'} %>
+							<% else %>
+								<%= image_tag 'DummyImageURL.png', {:size=>'25x25'} %>
 							<% end %>
 							<% end %></span>
 						<% if progre.comment.present? %><div style="display:block; margin-top:-1px; width:95%; margin-right:10px; border-right:10px solid white; border-top:10px solid transparent;"><span style="padding:5px; float:right; margin-right:-15px; background:white;"><%= progre.comment %></span></div><% end %>
