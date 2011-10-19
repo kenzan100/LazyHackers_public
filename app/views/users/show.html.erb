@@ -4,7 +4,6 @@
 </div>
 
 <div data-role="content">
-	<h2>実行回数:<%= Progre.where(:user_id=>@user_id, :success=>true).group(:scope_id).each.count %></h2>
 	
 	<h3>この人が参加しているスコープ</h3>
 	<ol>
