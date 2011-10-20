@@ -137,13 +137,13 @@
 			<li data-role="list-divider">みんなの様子</li>
 			<% @users.each do |user| %>
 			<li data-icon="false" style="height:52px;">
-				<% link_to(user, "style"=>"text-decoration:none; display:inline-block;") do %>
+				<% link_to(user, "style"=>"text-decoration:none; display:inline-block; float:left;") do %>
 					<% if user.image_url.present? %>
 						<%= image_tag user.image_url, {:size=>'35x35', :class=>'ui-li-icon'} %>
 					<% else %>
 						<%= image_tag 'DummyImageURL.png', {:size=>'35x35', :class=>'ui-li-icon'} %>
 					<% end %>
-				<span style="display:inline-block; width:70px; margin-left:15px;">
+				<span style="display:inline-block; width:60px; margin-left:15px;">
 					<% if user.screen_name.present? %>
 						<%= user.screen_name %>
 					<% else %>
@@ -151,12 +151,19 @@
 					<% end %>
 				</span>
 				<% end %>
-				<span style="display:inline-block; width:80px; padding:10px 10px 10px 15px;">
+				<span style="display:inline-block; width:55px; padding:7px 10px 10px 15px;">
 				<% if @five_am_issue.fetch(user.id) == true %>
-					<%= image_tag 'button_done.png', :size=>'55x30' %>
+					<%= image_tag 'button_done.png', {:size=>'50x27', :style=>'float:left;'} %>
 				<% else %>
-					<%= image_tag 'button_undone.png', :size=>'55x30' %>
+					<%= image_tag 'button_undone.png', {:size=>'50x27', :style=>'float:left;'} %>
 				<% end %>
+				<span style="color:gray; font-size:10px; float:right;">
+					<% if user.progres.exists?(:hack_tag_id=>@scope.hack_tags.last.id, :success=>true) %>
+						<%= time_ago_in_words(user.progres.where(:hack_tag_id=>@scope.hack_tags.last.id, :success=>true).last.done_when) %>前
+					<% else %>
+						やってないよ
+					<% end %>
+				</span>
 				</span>
 				<span class="ui-li-aside">
 						<% if @five_am_issue.fetch(user.id) == true %>
@@ -168,15 +175,6 @@
 						<% end %>
 						<% end %>
 				</span>
-				<!--
-				<span style="color:gray; font-size:11px;">
-					<%# if user.progres.exists?(:success=>true) %>
-						<%#= time_ago_in_words(user.progres.where(:success=>true).last.done_when) %> ago
-					<%# else %>
-						やってないよ
-					<%# end %>
-				</span>
-				-->
 			</li>
 			<% end %>
 		</ul>
