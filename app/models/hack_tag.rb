@@ -12,12 +12,12 @@ class HackTag < ActiveRecord::Base
     hack_tags.each do |hack_tag|
       dropout = 0
       hack_tag.users.each do |user|
-        if user.progres.exists?(:dropout=>true)
+        if user.progres.exists?(:hack_tag_id=>hack_tag.id, :dropout=>true)
           dropout += 1
         end
       end
 
-      if hack_tag.users.group(:id).each.count == dropout
+      if hack_tag.users.count == dropout
         hack_tag.destroy
       end
     end

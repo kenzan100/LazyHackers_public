@@ -7,8 +7,7 @@
     <th>Image url</th>
     <th>Next HackTag</th>
     <th>HackTagUsers</th>
-	<th>HTU (group_by_id)</th>
-	<th></th>
+	<th>DropOutPoints</th>
     <th></th>
   </tr>
 
@@ -16,21 +15,18 @@
   <tr>
 	<td><%= hack_tag.id %></td>
     <td><%= hack_tag.name %></td>
-    <td><%#= image_tag hack_tag.image_url, :size=>'25x25' %></td>
+    <td><%= (image_tag hack_tag.image_url, :size=>'25x25') if hack_tag.image_url.present? %></td>
 	<td>
-	<!--
 		<% if HackTagFollow.exists?(:greater_hack_tag_id=>hack_tag.id) %>
 			<% HackTagFollow.where(:greater_hack_tag_id=>hack_tag.id).each do |next_hack_tag| %>
-				<%#= HackTag.find(next_hack_tag.hack_tag_id).name %>(id:<%#= HackTag.find(next_hack_tag.hack_tag_id).id %>)
+				<%= HackTag.find(next_hack_tag.hack_tag_id).name %>(id:<%= HackTag.find(next_hack_tag.hack_tag_id).id %>)
 			<% end %>
 		<% end %>
-	-->
 	</td>
 	<td><%= hack_tag.users.count %></td>
-	<td><%= hack_tag.users.group(:id).each.count %></td>
 	<td><% dropout = 0 %>
 		<% hack_tag.users.each do |user|%>
-			<% if user.progres.exists?(:dropout=>true) %>
+			<% if user.progres.exists?(:hack_tag_id=>hack_tag.id, :dropout=>true) %>
 			<% dropout += 1 %>
 			<% end %>
 		<% end %>

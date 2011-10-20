@@ -23,8 +23,11 @@
 	
 	<%# HackTag.check_exit(HackTag.all) %>
 	<%# Scope.insert_image_from_hack_tag(Scope.all) %>
+	
 	<%# UsersHacktag.update_from_progres(Progre.all) %>
-	<%# Progre.check_dropout(User.all, HackTag.all) %>
+	<%# Progre.check_dropout(User.all, Scope.all) %>
+	
+	<%# Progre.erase_all_dropout %>
 
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" style="margin-bottom:15px;">
 		<% if @noti_progres.count >= 1 %>

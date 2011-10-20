@@ -1,6 +1,9 @@
 <% @users.each do |user| %>
 <ul style="list-style:none;">
 	<li>
+		<%= user.id %> <%= user.screen_name %>
+	</li>
+	<li>
 		<%= user.email %>
 	</li>
 </ul>

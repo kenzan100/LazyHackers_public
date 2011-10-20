@@ -60,6 +60,10 @@ class ProgresController < ApplicationController
   def create_all
     hack_tags = HackTag.where(:id=>params[:hack_tag_ids])
     success_progres = Progre.create_all_success(hack_tags, params[:user_id], params[:scope_id])
+    
+    if current_user.progres.exists?(:dropout=>true, :scope_id=>params[:scope_id])
+      current_user.progres.where(:scope_id=>params[:scope_id]).update_all(:dropout=>false)
+    end
 
     @scope = Scope.find(params[:scope_id])
     if hack_tags.count == 1

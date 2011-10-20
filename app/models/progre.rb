@@ -55,16 +55,20 @@ class Progre < ActiveRecord::Base
       progre.comment = comment
       progre.save
     end
+  end  
+  
+  def self.erase_all_dropout
+    Progre.update_all(:dropout=>false)
   end
   
-  def self.check_dropout(users, hack_tags)
+  def self.check_dropout(users, scopes)
     six_daysago = Date.today - 6.days
     today = Date.today
     hangin_theres = []
     users.each do |user|
-      hack_tags.each do |hack_tag|
+      scopes.each do |scope|
         hangin_there = 0
-        last_done = user.progres.where(:hack_tag_id=>hack_tag.id, :success=>true).last
+        last_done = user.progres.where(:scope_id=>scope.id, :success=>true).last
         
         if last_done.present?
           (six_daysago..today).each do |each_day|
@@ -75,9 +79,9 @@ class Progre < ActiveRecord::Base
         end
                       
         if hangin_there == 0
-          user.progres.where(:hack_tag_id=>hack_tag.id).update_all(:dropout => true)
+          user.progres.where(:scope_id=>scope.id).update_all(:dropout => true)
         else
-          user.progres.where(:hack_tag_id=>hack_tag.id).each do |recover|
+          user.progres.where(:scope_id=>scope.id).each do |recover|
             recover.dropout = false
             recover.save
           end
@@ -120,36 +124,4 @@ class Progre < ActiveRecord::Base
     
   end
   
-  def self.from_updated_at_to_done_when
-    Progre.all.each do |progre|
-      progre.done_when = progre.updated_at
-      progre.save
-    end
-  end
-  
-  def self.from_party_id_to_scope_id
-    Progre.all.each do |progre|
-      #プログレのパーティーIDをパーティーズハックタグに照らし合わせて、スコープIDに値を入れる
-      if PartiesScope.exists?(:party_id=>progre.party_id)
-        progre.scope_id = PartiesScope.where(:party_id=>progre.party_id).first.scope_id
-        progre.save
-      end
-    end
-  end
-  
-  def self.from_party_id_to_hack_tag_id
-    Progre.all.each do |progre|
-      pid = progre.party_id
-      PartiesHacktag.where(:party_id=>pid).each_with_index do |p_to_tag, i|
-        if i == 0
-          progre.hack_tag_id = p_to_tag.hack_tag_id
-          progre.save
-        else
-          clone_progre = progre.clone
-          clone_progre.hack_tag_id = p_to_tag.hack_tag_id
-          clone_progre.save
-        end
-      end
-    end
-  end
 end

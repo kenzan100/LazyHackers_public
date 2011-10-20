@@ -8,13 +8,13 @@
 # set :output, "/path/to/my/cron_log.log"
 set :output, {:error=>'log/error.log', :standard=>'log/cron.log'}
 #
-every '30 21 * * *' do
+every '02 4 * * *' do
 #   command "/usr/bin/some_great_command"
 #   runner "MyModel.some_method"
-    runner 'Progre.check_dropout(User.all, HackTag.all); Rails.logger.flush'
+    runner 'Progre.check_dropout(User.all, Scope.all); Rails.logger.flush'
     runner 'UsersHacktag.update_from_progres(Progre.all); Rails.logger.flush'
-    runner 'HackTag.check_exit(HackTag.all); Rails.logger.flush'
-    runner 'HackTagFollow.check_exit; Rails.logger.flush'
+    #runner 'HackTag.check_exit(HackTag.all); Rails.logger.flush'
+    #runner 'HackTagFollow.check_exit; Rails.logger.flush'
 #   rake "some:great:rake:task"
 end
 #

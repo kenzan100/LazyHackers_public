@@ -5,6 +5,11 @@
 #  - Tsutomu Kuroda (t-kuroda@oiax.jp)
 
 ja:
+  will_paginate:
+    page_gap: "......"
+    next_label: "次へ"
+    previous_label: "前へ"
+  
   date:
     formats:
       default: "%Y/%m/%d"
