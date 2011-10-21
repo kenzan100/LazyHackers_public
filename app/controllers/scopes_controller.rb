@@ -187,33 +187,21 @@ class ScopesController < ApplicationController
     @users.each do |user|
       found_deeper_position = 0
       @next_hack_tags.each do |next_hack_tag|
-        if next_hack_tag.progres.exists?(:user_id=>user.id, :success=>true)
+        if next_hack_tag.progres.where('dropout != ?', true).exists?(:user_id=>user.id, :success=>true)
           found_deeper_position = 1
           @progres += user.progres.where(:hack_tag_id=>next_hack_tag.id, :success=>true).order('done_when DESC').limit(10)
-            #@progres.push(u_progre)
-          #end
         end
       end
       if found_deeper_position == 0
         @progres += user.progres.where(:hack_tag_id=>@hack_tags.last.id, :success=>true).order('done_when DESC').limit(10)
-          #@progres.push(u_progre)
-        #end
       end
       
 		  #やった、まだ、の朝5時を境にした判定
       if Time.now.hour < 5
   		  tf = user.progres.where('done_when>=? AND user_id=? AND hack_tag_id=?', Time.now.beginning_of_day-1.day+5.hours, user.id, @hack_tags.last.id).exists?(:success=>true) || user.progres.where('done_when>=? AND user_id=? AND hack_tag_id=?', Time.now.beginning_of_day+5.hours, user.id, @hack_tags.last.id).exists?(:success=>true)
       	@five_am_issue[user.id] = tf
-      	
-      	#自分の場合は、scope_idでtf判定
-      	#if user_signed_in? && user.id == current_user.id
-				  #@current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day-1.day+5.hours).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id) || Progre.where('done_when>=?', Time.now.beginning_of_day+5.hours).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
-			  #end
   		else
   			@five_am_issue.store(user.id, user.progres.where('done_when>=? AND user_id=? AND hack_tag_id=?', Time.now.beginning_of_day+5.hours, user.id, @hack_tags.last.id).exists?(:success=>true))
-      	#if user_signed_in? && user.id == current_user.id
-				  #@current_user_tf = Progre.where('done_when>=?', Time.now.beginning_of_day+5.hours).exists?(:user_id=>current_user.id, :success=>true, :scope_id=>@scope.id)
-    	  #end
   		end
     end
     @progres = @progres.sort{|a, b| b.done_when<=>a.done_when}

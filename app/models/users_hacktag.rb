@@ -16,4 +16,5 @@ class UsersHacktag < ActiveRecord::Base
       end
     end
   end
+  
 end

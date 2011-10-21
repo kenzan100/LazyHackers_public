@@ -3,6 +3,13 @@ class Progre < ActiveRecord::Base
   belongs_to :user
   belongs_to :scope
   
+  def self.change_belonging_hack_tags(scope_id, original_hack_tag_id, new_hack_tag_id)
+    updating_progres = Progre.where(:scope_id=>scope_id, :hack_tag_id=>original_hack_tag_id)
+    updating_progres.update_all(:hack_tag_id=>new_hack_tag_id)
+    UsersHacktag.update_from_progres(Progre.all)
+    HacksScope.change_belonging_hack_tags(scope_id, original_hack_tag_id, new_hack_tag_id)
+  end
+  
   def self.one_shallow_point_progres(scope_id, user_id)
     progres = []
     scope = Scope.find(scope_id)

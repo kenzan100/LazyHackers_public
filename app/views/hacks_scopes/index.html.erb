@@ -2,8 +2,8 @@
 
 <table>
   <tr>
-    <th>Scope id</th>
 	<th>HackTag id</th>
+    <th>Scope id</th>
     <th></th>
     <th></th>
     <th></th>
@@ -11,8 +11,8 @@
 
 <% @hacks_scopes.each do |hacks_scope| %>
   <tr>
+    <td><%= HackTag.find(hacks_scope.hack_tag_id).name %>(id:<%= hacks_scope.hack_tag_id %>)</td>
     <td><%= hacks_scope.scope_id %></td>
-    <td><%= hacks_scope.hack_tag_id %></td>
     <td><%= link_to 'Show', hacks_scope %></td>
     <td><%= link_to 'Edit', edit_hacks_scope_path(hacks_scope) %></td>
     <td><%= link_to 'Destroy', hacks_scope, :confirm => 'Are you sure?', :method => :delete %></td>
