@@ -19,8 +19,8 @@
 	
 	<ul data-role="listview">
 		<% @scopes.each do |scope| %>
-		<li data-icon="false">
-			<% link_to(scope_path(scope, :from_search=>"true"), {'style'=>'min-height:40px;'}) do %>
+		<li class="changePage" url="/scopes/<%=scope.id%>?from_search=true" data-icon="false">
+			<%# link_to(scope_path(scope, :from_search=>"true"), {'style'=>'min-height:40px;'}) do %>
 				<span style="margin-left:20px;">
 					<%= scope.hack_tags.last.name %>
 				</span>
@@ -36,7 +36,7 @@
 						<% end %>
 					<% end %>
 				</span>
-			<% end %>
+			<%# end %>
 		</li>
 		<% end %>
 		<li>
