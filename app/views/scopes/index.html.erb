@@ -124,7 +124,7 @@
 			<% progres.each do |progre| %>
 				<%# if date[0] == progre.done_when.strftime("%Y %m %d") %>
 				<% if progre.scope_id %>
-				<li class="changePage" url="scopes/<%=progre.scope_id%>">
+				<li class="changePage" url="scopes/<%=progre.scope_id%>?from_search=true">
 				<% else %>
 				<li>
 				<% end %>
