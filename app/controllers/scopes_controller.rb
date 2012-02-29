@@ -86,12 +86,13 @@ class ScopesController < ApplicationController
   # GET /scopes
   # GET /scopes.xml
   def index
-    noti_hack_tag = HackTag.find(52)
-    if user_signed_in?
-      @noti_progres = noti_hack_tag.progres.where(:user_id=>current_user.id, :success=>false).order('updated_at DESC').limit(3)
-    else
-      @noti_progres = []
-    end
+    #notification included as hard HackTag
+    #noti_hack_tag = HackTag.find(52)
+    #if user_signed_in?
+      #@noti_progres = noti_hack_tag.progres.where(:user_id=>current_user.id, :success=>false).order('updated_at DESC').limit(3)
+    #else
+      #@noti_progres = []
+    #end
     
     @root_hack_tags = HackTag.where(:root_flag=>true)
     

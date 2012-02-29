@@ -26,13 +26,13 @@ Lazyhackers4::Application.configure do
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :enable_starttls_auto => 'true',
-    :address => 'smtp.gmail.com',
-    :port => 587,
-    :domain => 'lazyhackers.com',
-    :authentication => :plain,
-    :user_name => 'info@lazyhackers.com',
-    :password => 'l0a9z0y3'
+    #:enable_starttls_auto => '',
+    #:address => '',
+    #:port => ,
+    #:domain => '',
+    #:authentication => ,
+    #:user_name => '',
+    #:password => ''
   }
 end
 

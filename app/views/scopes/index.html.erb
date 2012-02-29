@@ -30,6 +30,9 @@
 	<%# Progre.erase_all_dropout %>
 
 	<ul data-role="listview" data-divider-theme="e" data-split-theme="d" style="margin-bottom:15px;">
+<%
+=begin
+%>
 		<% if @noti_progres.count >= 1 %>
 		<div data-role="collapsible-set">
 			<h3 style="margin:0 0 0 12px; font-weight:normal; font-size:14px;">未読ニュース! <span style="float:right;"><%= link_to '一言送る', my_feedback_scopes_path %> | <%= link_to '全部見る', notifications_progres_path %></span>
@@ -51,6 +54,9 @@
 			<% end %>
 		</div>
 		<% end %>
+<%
+=end
+%>
 	<% if user_signed_in? && current_user.scopes.length > 0 %>
 	<!--
 	<div data-role="navbar" data-theme="e">
